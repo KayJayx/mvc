@@ -16,7 +16,5 @@ class Controller():
         self.view  = View()
         self.model = Model()
 
-        
-
         # Run the designer to actually display the info to the screen
-        self.view.designer.Run()
+        self.view.Run()
