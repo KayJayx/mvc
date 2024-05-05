@@ -38,17 +38,17 @@ class View(Designer):
         # IDEA: We can create classes that take the control object as input in the constructor
         # and all this class does is tie a controller to the control object, in other words
         # register a listener object
-        self.generate_waveform_button.SetButtonCallback(callback=View.GenerateWaveFormButtonCallback)
-        self.generate_waveform_button.SetButtonUserData(user_data=self)
+        self.generate_waveform_button.SetCallback(callback=View.GenerateWaveFormButtonCallback)
+        self.generate_waveform_button.SetUserData(user_data=self)
         #self.generate_waveform_button.SetButtonUserData(user_data=self.designer.generate_waveform)
-        self.stop_waveform_button.SetButtonCallback(callback=View.StopWaveFormButtonCallback)
-        self.stop_waveform_button.SetButtonUserData(user_data=self)
+        self.stop_waveform_button.SetCallback(callback=View.StopWaveFormButtonCallback)
+        self.stop_waveform_button.SetUserData(user_data=self)
         #self.stop_waveform_button.SetButtonUserData(user_data=self.designer.generate_waveform)
-        self.clear_plot_button.SetButtonCallback(callback=View.ClearPlotsButtonCallback)
-        self.clear_plot_button.SetButtonUserData(user_data=self)
+        self.clear_plot_button.SetCallback(callback=View.ClearPlotsButtonCallback)
+        self.clear_plot_button.SetUserData(user_data=self)
         #self.clear_plot_button.SetButtonUserData(user_data=self.designer.clear_plots)
-        self.frequency_slider.SetSliderCallback(callback=View.FrequencySliderCallback)
-        self.frequency_slider.SetSliderUserData(user_data=self)
+        self.frequency_slider.SetCallback(callback=View.FrequencySliderCallback)
+        self.frequency_slider.SetUserData(user_data=self)
         #self.frequency_slider.SetSliderUserData(user_data=self.designer)
 
     @property
