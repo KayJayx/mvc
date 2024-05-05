@@ -35,7 +35,7 @@ class Designer():
 
         # Create the main window
         self.main_window = cc.Window()
-        self.main_window.ChangeWindowPadding(window_pad=[0, 0], frame_pad=[0, 0], item_spacing=[0, 0])
+        self.main_window.ChangePadding(window_pad=[0, 0], frame_pad=[0, 0], item_spacing=[0, 0])
         self.main_window.BindTheme()
 
         # Create a window just for the plots
@@ -94,7 +94,7 @@ class Designer():
 
         # Create a label to show the controls
         self.group1         = cc.Group(parent=self.control_window, pos=[0, 0])
-        self.group1.ChangeGroupPadding(window_pad=[0, 0], frame_pad=[10, 10], item_spacing=[0, 0])
+        self.group1.ChangePadding(window_pad=[0, 0], frame_pad=[10, 10], item_spacing=[0, 0])
         self.group1.BindTheme()
         self.controls_label = cc.Label(label="   Controls", parent=self.group1)
         self.separator      = cc.LineSeparator(parent=self.group1)
