@@ -117,23 +117,29 @@ class Control():
         if self.parent is not None and isinstance(self.parent, Control):
             self.parent.children.append(self)
 
-    def Destroy(self) -> None:
+    def Destroy(self) -> Control:
         """
         Destroy the control
         """
         dpg.delete_item(self.tag)
 
-    def Enable(self) -> None:
+        return self
+
+    def Enable(self) -> Control:
         """
         Enable the control
         """
         dpg.enable_item(self.tag)
 
-    def Disable(self) -> None:
+        return self
+
+    def Disable(self) -> Control:
         """
         Disable Control
         """
         dpg.disable_item(self.tag)
+
+        return self
 
     def IsEnabled(self) -> bool:
         """
@@ -141,17 +147,21 @@ class Control():
         """
         return dpg.is_item_enabled(self.tag)
 
-    def Show(self) -> None:
+    def Show(self) -> Control:
         """
         Show the window
         """
         dpg.show_item(self.tag)
+
+        return self
         
-    def Hide(self) -> None:
+    def Hide(self) -> Control:
         """
         Hide the window
         """
         dpg.hide_item(self.tag)
+
+        return self
 
     def IsShown(self) -> bool:
         """
@@ -165,11 +175,13 @@ class Control():
         """
         return dpg.get_item_pos(self.tag)
     
-    def SetPosition(self, pos: 'list[int]') -> None:
+    def SetPosition(self, pos: 'list[int]') -> Control:
         """
         Set the position of the control on the screen
         """
         dpg.set_item_pos(self.tag, pos)
+
+        return self
     
     def GetWidth(self) -> int:
         """
@@ -189,7 +201,39 @@ class Control():
         """
         return dpg.get_value(self.tag)
     
-    def ChangePadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> None:
+    def SetDragCallback(self, callback: typing.Any) -> Control:
+        """
+        Set the drag callback for the item
+        """
+        dpg.set_item_drag_callback(self.tag, callback=callback)
+
+        return self
+    
+    def SetDropCallback(self, callback: typing.Any) -> Control:
+        """
+        Set the drop callback for the item
+        """
+        dpg.set_item_drop_callback(self.tag, callback=callback)
+
+        return self
+    
+    def SetCallback(self, callback: typing.Any) -> Control:
+        """
+        Set the callback for the item
+        """
+        dpg.set_item_callback(self.tag, callback=callback)
+
+        return self
+    
+    def SetUserData(self, user_data: typing.Any) -> Control:
+        """
+        Set the user data for the item
+        """
+        dpg.set_item_user_data(self.tag, user_data=user_data)
+
+        return self
+    
+    def ChangePadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> Control:
         """
         Change padding for the item
         """
@@ -199,7 +243,7 @@ class Control():
 
         return self
     
-    def ChangeRounding(self, frame_rounding: int = 0) -> None:
+    def ChangeRounding(self, frame_rounding: int = 0) -> Control:
         """
         Change the rounding of the item
         """
@@ -207,13 +251,32 @@ class Control():
 
         return self
     
-    def BindTheme(self) -> None:
+    def BindTheme(self) -> Control:
         """
         Binds the theme to the item
         """
         dpg.bind_item_theme(self.tag, self.theme)
 
         return self
+    
+class DragAndDropPayloadExtension(Control):
+
+    """
+    A class that encapsulates the drag and drop functionality
+    """
+
+    def __init__(self, label: str = None, drag_data: typing.Any = None, 
+                 drop_data: typing.Any = None, user_data: typing.Any = None, 
+                 payload_type: str = '$$DPG_PAYLOAD', parent: Control = None) -> None:
+        super().__init__(parent=parent)
+        self.tag = dpg.add_drag_payload(
+            label=label,
+            drag_data=drag_data,
+            drop_data=drop_data,
+            user_data=user_data,
+            payload_type=payload_type,
+            parent=self.parent.tag
+        )
 
 class Menu(Control):
 
@@ -230,7 +293,7 @@ class Menu(Control):
             parent=self.parent.tag
         )
 
-    def AddMenuItem(self, label: str = None, callback: typing.Any = None, user_data: typing.Any = None) -> None:
+    def AddMenuItem(self, label: str = None, callback: typing.Any = None, user_data: typing.Any = None) -> Menu:
         """
         Add menu item to the menu option
         """
@@ -246,7 +309,7 @@ class Menu(Control):
 
         return self
     
-    def AddBorder(self, border_size: float = 0.6) -> None:
+    def AddBorder(self, border_size: float = 0.6) -> Menu:
         """
         Add a border to the menu selection list
         """
@@ -305,25 +368,6 @@ class TabBar(Control):
         Add a tab to the tab bar
         """
         return Tab(label=label, indent=indent, parent=self)
-
-class DragAndDropPayloadExtension(Control):
-
-    """
-    A class that encapsulates the drag and drop functionality
-    """
-
-    def __init__(self, label: str = None, drag_data: typing.Any = None, 
-                 drop_data: typing.Any = None, user_data: typing.Any = None, 
-                 payload_type: str = '$$DPG_PAYLOAD', parent: Control = None) -> None:
-        super().__init__(parent=parent)
-        self.tag = dpg.add_drag_payload(
-            label=label,
-            drag_data=drag_data,
-            drop_data=drop_data,
-            user_data=user_data,
-            payload_type=payload_type,
-            parent=self.parent.tag
-        )
 
 class CollapseHeader(Control):
 
@@ -398,7 +442,7 @@ class Window(Control):
             # Create the menu bar control
             self.menu_bar = MenuBar(label=f"{label}_menu_bar", parent=self)
 
-    def AddBorder(self, border_size: float = 0.6) -> None:
+    def AddBorder(self, border_size: float = 0.6) -> Window:
         """
         Add a border to the window
         """
@@ -406,7 +450,7 @@ class Window(Control):
 
         return self
 
-    def ChangeWindowColor(self, color: 'list[int]') -> None:
+    def ChangeWindowColor(self, color: 'list[int]') -> Window:
         """
         Changes the color of the window
         """
@@ -450,7 +494,7 @@ class ChildWindow(Control):
             # Create the menu bar control
             self.menu_bar = MenuBar(label=f"{label}_menu_bar", parent=self)
     
-    def ChangeWindowBackgroundColor(self, color: 'list[int]') -> None:
+    def ChangeWindowBackgroundColor(self, color: 'list[int]') -> ChildWindow:
         """
         Change the background color of the window
         """
@@ -458,7 +502,7 @@ class ChildWindow(Control):
 
         return self
     
-    def ChangeWindowBorderColor(self, color: 'list[int]') -> None:
+    def ChangeWindowBorderColor(self, color: 'list[int]') -> ChildWindow:
         """
         Changes the color of the windows border
         """
@@ -466,7 +510,7 @@ class ChildWindow(Control):
 
         return self
     
-    def AddToMiscData(self, data: typing.Any) -> None:
+    def AddToMiscData(self, data: typing.Any) -> ChildWindow:
         """
         Add any type of data to the instance of this class
         """
@@ -504,7 +548,7 @@ class Button(Control):
             direction=direction
         )
 
-    def AddBorder(self, border_size: float = 0.6) -> None:
+    def AddBorder(self, border_size: float = 0.6) -> Button:
         """
         Add a border to the button
         """
@@ -512,27 +556,11 @@ class Button(Control):
 
         return self
     
-    def ChangeButtonColor(self, color: 'list[int]') -> None:
+    def ChangeButtonColor(self, color: 'list[int]') -> Button:
         """
         Change the color of the background of the button
         """
         dpg.add_theme_color(dpg.mvThemeCol_Button, color, category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def SetButtonCallback(self, callback: typing.Any) -> None:
-        """
-        Set the callback for the button
-        """
-        dpg.set_item_callback(self.tag, callback=callback)
-
-        return self
-    
-    def SetButtonUserData(self, user_data: typing.Any) -> None:
-        """
-        Set the user data for the button
-        """
-        dpg.set_item_user_data(self.tag, user_data=user_data)
 
         return self
     
@@ -601,7 +629,7 @@ class Label(Control):
             user_data=user_data
         )
     
-    def SetLabel(self, label: str) -> None:
+    def SetLabel(self, label: str) -> Label:
         """
         Set the label of the label control
         """
@@ -609,7 +637,7 @@ class Label(Control):
 
         return self
     
-    def ChangeLabelColor(self, color: 'list[float]') -> None:
+    def ChangeLabelColor(self, color: 'list[float]') -> Label:
         """
         Change the color of the label text
         """
@@ -715,7 +743,7 @@ class Plot(Control):
 
     def AddPlot(self, x_label: str, y_label: str, add_legend: bool = False, x_time: bool = False, y_time: bool = False, 
                 x_lock_min: bool = False, x_lock_max: bool = False, y_lock_min: bool = False, y_lock_max: bool = False,
-                x_no_gridlines: bool = False, y_no_gridlines: bool = False) -> None:
+                x_no_gridlines: bool = False, y_no_gridlines: bool = False) -> Plot:
         """
         Creates the proper resources/references for plotting callbacks
         """
@@ -728,7 +756,7 @@ class Plot(Control):
 
         return self
     
-    def FitAxis(self, axis: int) -> None:
+    def FitAxis(self, axis: int) -> Plot:
         """
         Auto fits the axis to the plot
         """
@@ -736,7 +764,7 @@ class Plot(Control):
 
         return self
     
-    def SetAxisLimits(self, axis: int, min: float, max: float) -> None:
+    def SetAxisLimits(self, axis: int, min: float, max: float) -> Plot:
         """
         Sets axis limits.
         """
@@ -885,7 +913,7 @@ class Plot(Control):
         if self.one_plot_at_a_time:
             source_control.Disable()
 
-    def SetPlotLabel(self, label: str) -> None:
+    def SetPlotLabel(self, label: str) -> Plot:
         """
         Sets the label of the plot i.e. title
         """
@@ -893,39 +921,7 @@ class Plot(Control):
 
         return self
     
-    def SetPlotDragCallback(self, callback: typing.Any) -> None:
-        """
-        Sets the plot drag callback
-        """
-        dpg.set_item_drag_callback(self.tag, callback=callback)
-
-        return self
-
-    def SetPlotDropCallback(self, callback: typing.Any) -> None:
-        """
-        Sets the plot drop callback
-        """
-        dpg.set_item_drop_callback(self.tag, callback=callback)
-
-        return self
-    
-    def SetPlotCallback(self, callback: typing.Any) -> None:
-        """
-        Sets the callback for the plot
-        """
-        dpg.set_item_callback(self.tag, callback=callback)
-
-        return self
-    
-    def SetPlotUserData(self, user_data: typing.Any) -> None:
-        """
-        Sets the user data for the plot
-        """
-        dpg.set_item_user_data(self.tag, user_data=user_data)
-
-        return self
-    
-    def SetPlotLineColor(self, color: 'list[int]', theme_component: int) -> None:
+    def SetPlotLineColor(self, color: 'list[int]', theme_component: int) -> Plot:
         """
         Set the color of the line on plot
         """
@@ -933,7 +929,7 @@ class Plot(Control):
 
         return self
     
-    def AddBorderToLegend(self, theme_component: int, border_size: float = 0.6) -> None:
+    def AddBorderToLegend(self, theme_component: int, border_size: float = 0.6) -> Plot:
         """
         Adds a border to the legend
         """
@@ -968,7 +964,7 @@ class ListBox(Control):
             payload_type=self.payload_type
         )
 
-    def AddToListBox(self, item: str) -> None:
+    def AddToListBox(self, item: str) -> ListBox:
         """
         Add an item to the listbox
         """
@@ -981,7 +977,7 @@ class ListBox(Control):
 
         return self
     
-    def DeleteFromListBox(self, item: str) -> None:
+    def DeleteFromListBox(self, item: str) -> ListBox:
         """
         Delete an item from the listbox
         """
@@ -1013,22 +1009,6 @@ class ListBox(Control):
         )
 
         return drag_and_drop
-    
-    def SetListBoxDragCallback(self, callback: typing.Any) -> None:
-        """
-        Set the drag callback for the list box
-        """
-        dpg.set_item_drag_callback(self.tag, callback=callback)
-
-        return self
-    
-    def SetListBoxUserData(self, user_data: typing.Any) -> None:
-        """
-        Set the user data for the list box
-        """
-        dpg.set_item_user_data(self.tag, user_data=user_data)
-
-        return self
 
 class InputTextBox(Control):
 
@@ -1072,7 +1052,7 @@ class InputTextBox(Control):
             on_enter=on_enter
         )
 
-    def AddBorder(self, border_size: float = 0.6, theme_component: int = None) -> None:
+    def AddBorder(self, border_size: float = 0.6, theme_component: int = None) -> InputTextBox:
         """
         Add a border to the button
         """
@@ -1083,7 +1063,7 @@ class InputTextBox(Control):
 
         return self
     
-    def ChangeInputTextBoxRounding(self, frame_rounding: int, grab_rounding: int, theme_component: int = None) -> None:
+    def ChangeInputTextBoxRounding(self, frame_rounding: int, grab_rounding: int, theme_component: int = None) -> InputTextBox:
         """
         Change the rounding of the control
         """
@@ -1095,7 +1075,7 @@ class InputTextBox(Control):
 
         return self
     
-    def ChangeInputTextBoxPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]', theme_component: int = None) -> None:
+    def ChangeInputTextBoxPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]', theme_component: int = None) -> InputTextBox:
         """
         Change padding for the control
         """
@@ -1108,45 +1088,13 @@ class InputTextBox(Control):
 
         return self
     
-    def SetInputTextBoxDragCallback(self, callback: typing.Any) -> None:
-        """
-        Set the drag callback for the input textbox
-        """
-        dpg.set_item_drag_callback(self.tag, callback=callback)
-
-        return self
-    
-    def SetInputTextBoxDropCallback(self, callback: typing.Any) -> None:
-        """
-        Set the drop callback for the input textbox
-        """
-        dpg.set_item_drop_callback(self.tag, callback=callback)
-
-        return self
-
-    def SetInputTextBoxCallback(self, callback: typing.Any) -> None:
-        """
-        Set the callback for the input textbox
-        """
-        dpg.set_item_callback(self.tag, callback=callback)
-
-        return self
-    
-    def SetInputTextBoxUserData(self, user_data: typing.Any) -> None:
-        """
-        Set the user data for the input text box
-        """
-        dpg.set_item_user_data(self.tag, user_data=user_data)
-
-        return self
-    
     def GetText(self) -> str:
         """
         Get the text that is currently in the textbox
         """
         return self.GetValue()
     
-    def SetText(self, text: str) -> None:
+    def SetText(self, text: str) -> InputTextBox:
         """
         Set the text that is currently in the textbox
         """
@@ -1189,22 +1137,6 @@ class DateSelect(Control):
             user_data=user_data
         )
     
-    def SetDateSelectCallback(self, callback: typing.Any) -> None:
-        """
-        Sets the callback for the data select control
-        """
-        dpg.set_item_callback(self.tag, callback=callback)
-
-        return self
-    
-    def SetDateSelectUserData(self, user_data: typing.Any) -> None:
-        """
-        Sets the user data for the data select control
-        """
-        dpg.set_item_user_data(self.tag, user_data=user_data)
-
-        return self
-    
     def GetSelectedDateString(self) -> str:
         """
         Get the selected date from the date select control
@@ -1223,7 +1155,7 @@ class DateSelect(Control):
 
         return f"{month:>02}-{day:>02}-{year}"
     
-    def SetSelectedDate(self, month: int, day: int, year: int) -> None:
+    def SetSelectedDate(self, month: int, day: int, year: int) -> DateSelect:
         """
         Sets the selected date for the control
         """
@@ -1292,7 +1224,7 @@ class TimeSelect(Control):
         
         return selected_time
     
-    def SetSelectedTime(self, hour: int, minute: int, second: int) -> None:
+    def SetSelectedTime(self, hour: int, minute: int, second: int) -> TimeSelect:
         """
         Set the selected time for the control
         """
@@ -1304,22 +1236,6 @@ class TimeSelect(Control):
         data_structure['sec']  = second
 
         dpg.set_value(self.tag, data_structure)
-
-        return self
-    
-    def SetTimeSelectCallback(self, callback: typing.Any) -> None:
-        """
-        Set the callback for the time select control
-        """
-        dpg.set_item_callback(self.tag, callback=callback)
-
-        return self
-    
-    def SetTimeSelectUserData(self, user_data: typing.Any) -> None:
-        """
-        Set the user data for the time select control
-        """
-        dpg.set_item_user_data(self.tag, user_data=user_data)
 
         return self
     
@@ -1348,7 +1264,7 @@ class ComboBox(Control):
             payload_type=payload_type
         )
 
-    def AddToComboBox(self, item: str) -> None:
+    def AddToComboBox(self, item: str) -> ComboBox:
         """
         Add an item to the combobox
         """
@@ -1361,7 +1277,7 @@ class ComboBox(Control):
 
         return self
     
-    def DeleteFromComboBox(self, item: str) -> None:
+    def DeleteFromComboBox(self, item: str) -> ComboBox:
         """
         Delete an item from the combobox
         """
@@ -1374,7 +1290,7 @@ class ComboBox(Control):
 
         return self
     
-    def SetSelectedItem(self, selected_item: str) -> None:
+    def SetSelectedItem(self, selected_item: str) -> ComboBox:
         """
         Sets the selected item in the combobox
         """
@@ -1388,35 +1304,11 @@ class ComboBox(Control):
         """
         return self.GetValue()
     
-    def AddBorder(self, border_size: float = 0.6) -> None:
+    def AddBorder(self, border_size: float = 0.6) -> ComboBox:
         """
         Add a border to the combobox
         """
         dpg.add_theme_style(dpg.mvStyleVar_PopupBorderSize, border_size, category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def SetComboBoxDragCallback(self, callback: typing.Any) -> None:
-        """
-        Set the drag callback for the combobox control
-        """
-        dpg.set_item_drag_callback(self.tag, callback=callback)
-
-        return self
-    
-    def SetComboBoxCallback(self, callback: typing.Any) -> None:
-        """
-        Set the callback for the combobox control
-        """
-        dpg.set_item_callback(self.tag, callback=callback)
-
-        return self
-    
-    def SetComboBoxUserData(self, user_data: typing.Any) -> None:
-        """
-        Set the user data for the combobox control
-        """
-        dpg.set_item_user_data(self.tag, user_data=user_data)
 
         return self
     
@@ -1439,29 +1331,13 @@ class CheckBox(Control):
             user_data=user_data
         )
     
-    def SetCheckBoxCallback(self, callback: typing.Any) -> None:
-        """
-        Set the callback for the checkbox control
-        """
-        dpg.set_item_callback(self.tag, callback=callback)
-
-        return self
-    
-    def SetCheckBoxUserData(self, user_data: typing.Any) -> None:
-        """
-        Set the user data for the checkbox control
-        """
-        dpg.set_item_user_data(self.tag, user_data=user_data)
-
-        return self
-    
     def IsChecked(self) -> bool:
         """
         Checks if the checkbox control has been checked
         """
         return self.GetValue()
     
-    def CheckUncheck(self, uncheck: bool = False) -> None:
+    def CheckUncheck(self, uncheck: bool = False) -> CheckBox:
         """
         Either checks or unchecks the checkbox
         """
@@ -1483,7 +1359,7 @@ class TableRow(Control):
             parent=self.parent.tag
         )
 
-    def AddEmptyColumnEntry(self, label: str = None, height: int = 0) -> None:
+    def AddEmptyColumnEntry(self, label: str = None, height: int = 0) -> TableRow:
         """
         Add an empty entry into the column for the row
         """
@@ -1637,22 +1513,6 @@ class Table(Control):
         """
         return TableRow(label=label, height=height, parent=self)
     
-    def SetTableCallback(self, callback: typing.Any) -> None:
-        """
-        Set the callback for the table control
-        """
-        dpg.set_item_callback(self.tag, callback=callback)
-
-        return self
-    
-    def SetTableUserData(self, user_data: typing.Any) -> None:
-        """
-        Set the user data for the table control
-        """
-        dpg.set_item_user_data(self.tag, user_data=user_data)
-
-        return self
-    
 class LoadingIndicator(Control):
 
     """
@@ -1736,19 +1596,3 @@ class Slider(Control):
         Get the slider value.
         """
         return dpg.get_value(self.tag)
-    
-    def SetSliderCallback(self, callback: typing.Any) -> None:
-        """
-        Set a callback for when the slider changes value.
-        """
-        dpg.set_item_callback(self.tag, callback=callback)
-
-        return self
-    
-    def SetSliderUserData(self, user_data: typing.Any) -> None:
-        """
-        Set a user data for when the slider changes value.
-        """
-        dpg.set_item_user_data(self.tag, user_data=user_data)
-
-        return self
