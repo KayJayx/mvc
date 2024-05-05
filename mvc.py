@@ -1,8 +1,8 @@
-from design.view import View
+from design.controller import Controller
 
 def main() -> None:
     
-    View()
+    Controller()
 
     return 0
 
