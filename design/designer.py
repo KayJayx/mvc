@@ -60,7 +60,8 @@ class Designer():
             pos=[0, 0]
         )
         self.time_plot.AddPlot(x_label=x_label, y_label=y_label)
-        self.time_plot.SetPlotLineColor(color=[36, 183, 199], theme_component=self.time_plot.line_theme_component)
+        self.time_plot.SwitchThemeComponent(theme_component=self.time_plot.line_theme_component)
+        self.time_plot.SetPlotLineColor(color=[36, 183, 199])
         self.time_plot.BindTheme()
         self.time_plot.SetAxisLimits(self.time_plot.x_axis, 0, self.length_of_plot)
         self.time_plot.SetAxisLimits(self.time_plot.y_axis, -5, 5)
@@ -77,7 +78,8 @@ class Designer():
             pos=[0, self.time_plot.GetPosition()[1] + self.time_plot.GetHeight()]
         )
         self.freq_plot.AddPlot(x_label=x_label, y_label=y_label)
-        self.freq_plot.SetPlotLineColor(color=[36, 183, 199], theme_component=self.freq_plot.line_theme_component)
+        self.freq_plot.SwitchThemeComponent(theme_component=self.freq_plot.line_theme_component)
+        self.freq_plot.SetPlotLineColor(color=[36, 183, 199])
         self.freq_plot.BindTheme()
         self.freq_line_series = cc.dpg.add_line_series(x=[0], y=[0], parent=self.freq_plot.x_axis)
 
@@ -127,8 +129,8 @@ class Designer():
         self.height_slider     = cc.Slider(type=float, label="Change Height", width=140, height=100, parent=self.group3, pos=[20, 130], min_value=-5.0, max_value=5.0, default_value=0.0)
         self.phase_slider      = cc.Slider(type=float, label="Change Phase", width=140, height=100, parent=self.group3, pos=[20, 150], min_value=-10.0, max_value=10.0, default_value=0.0)
         self.frequency_slider  = cc.Slider(type=float, label="Change Frequency", width=140, height=100, parent=self.group3, pos=[20, 170], min_value=1.0, max_value=200.0, default_value=1.0)
-        self.angular_label     = cc.Label(label=f"Angular Freq: {'{:.3f}'.format(2 * np.pi * self.frequency_slider.GetSliderValue())}", parent=self.group3, pos=[20, 190])
-        self.period_label      = cc.Label(label=f"Period: {'{:.3f}'.format(1 / self.frequency_slider.GetSliderValue())}", parent=self.group3, pos=[20, 210])
+        self.angular_label     = cc.Label(label=f"Angular Freq: {'{:.3f}'.format(2 * np.pi * self.frequency_slider.GetValue())}", parent=self.group3, pos=[20, 190])
+        self.period_label      = cc.Label(label=f"Period: {'{:.3f}'.format(1 / self.frequency_slider.GetValue())}", parent=self.group3, pos=[20, 210])
         self.normalize_freq    = cc.CheckBox(label="Normalize Frequency", parent=self.group3, pos=[20, 230])
         #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         # Set a primary window which will always be drawn in the background
