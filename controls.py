@@ -201,6 +201,14 @@ class Control():
         """
         return dpg.get_value(self.tag)
     
+    def SetValue(self, value: typing.Any) -> Control:
+        """
+        Set the value of the control
+        """
+        dpg.set_value(self.tag, value=value)
+
+        return self
+    
     def SetDragCallback(self, callback: typing.Any) -> Control:
         """
         Set the drag callback for the item
@@ -450,7 +458,7 @@ class Window(Control):
 
         return self
 
-    def ChangeWindowColor(self, color: 'list[int]') -> Window:
+    def ChangeBackgroundColor(self, color: 'list[int]') -> Window:
         """
         Changes the color of the window
         """
@@ -494,7 +502,7 @@ class ChildWindow(Control):
             # Create the menu bar control
             self.menu_bar = MenuBar(label=f"{label}_menu_bar", parent=self)
     
-    def ChangeWindowBackgroundColor(self, color: 'list[int]') -> ChildWindow:
+    def ChangeBackgroundColor(self, color: 'list[int]') -> ChildWindow:
         """
         Change the background color of the window
         """
@@ -502,7 +510,7 @@ class ChildWindow(Control):
 
         return self
     
-    def ChangeWindowBorderColor(self, color: 'list[int]') -> ChildWindow:
+    def ChangeBorderColor(self, color: 'list[int]') -> ChildWindow:
         """
         Changes the color of the windows border
         """
@@ -556,7 +564,7 @@ class Button(Control):
 
         return self
     
-    def ChangeButtonColor(self, color: 'list[int]') -> Button:
+    def ChangeBackgroundColor(self, color: 'list[int]') -> Button:
         """
         Change the color of the background of the button
         """
@@ -629,15 +637,7 @@ class Label(Control):
             user_data=user_data
         )
     
-    def SetLabel(self, label: str) -> Label:
-        """
-        Set the label of the label control
-        """
-        dpg.set_value(self.tag, label)
-
-        return self
-    
-    def ChangeLabelColor(self, color: 'list[float]') -> Label:
+    def ChangeColor(self, color: 'list[float]') -> Label:
         """
         Change the color of the label text
         """
@@ -913,7 +913,7 @@ class Plot(Control):
         if self.one_plot_at_a_time:
             source_control.Disable()
 
-    def SetPlotLabel(self, label: str) -> Plot:
+    def SetPlotTitle(self, label: str) -> Plot:
         """
         Sets the label of the plot i.e. title
         """
@@ -1092,13 +1092,13 @@ class InputTextBox(Control):
         """
         Get the text that is currently in the textbox
         """
-        return self.GetValue()
+        return str(self.GetValue())
     
     def SetText(self, text: str) -> InputTextBox:
         """
         Set the text that is currently in the textbox
         """
-        dpg.set_value(self.tag, text)
+        self.SetValue(text)
 
         return self
 
@@ -1172,7 +1172,7 @@ class DateSelect(Control):
         data_structure['month_day'] = day
         data_structure['year']      = year
 
-        dpg.set_value(self.tag, data_structure)
+        self.SetValue(data_structure)
 
         return self
 
@@ -1235,7 +1235,7 @@ class TimeSelect(Control):
         data_structure['min']  = minute
         data_structure['sec']  = second
 
-        dpg.set_value(self.tag, data_structure)
+        self.SetValue(data_structure)
 
         return self
     
@@ -1294,7 +1294,7 @@ class ComboBox(Control):
         """
         Sets the selected item in the combobox
         """
-        dpg.set_value(self.tag, selected_item)
+        self.SetValue(selected_item)
 
         return self
     
@@ -1341,7 +1341,7 @@ class CheckBox(Control):
         """
         Either checks or unchecks the checkbox
         """
-        dpg.set_value(self.tag, not uncheck)
+        self.SetValue(not uncheck)
 
         return self
     
@@ -1595,4 +1595,4 @@ class Slider(Control):
         """
         Get the slider value.
         """
-        return dpg.get_value(self.tag)
+        return self.GetValue()
