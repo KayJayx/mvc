@@ -20,7 +20,7 @@ class UIControl():
         """
         self.listener = controller
 
-class View():
+class View(Designer):
 
     """
     The responsibility of the View is to get user input and display data to the user.
@@ -31,21 +31,46 @@ class View():
 
     def __init__(self) -> None:
 
-        # Create an instance of the designer class
-        self.designer = Designer()
+        # Create an instance of the base designer class
+        super().__init__()
 
         # Add the user data and callback functions here
         # IDEA: We can create classes that take the control object as input in the constructor
         # and all this class does is tie a controller to the control object, in other words
         # register a listener object
-        self.designer.generate_waveform_button.SetButtonCallback(callback=View.GenerateWaveFormButtonCallback)
-        self.designer.generate_waveform_button.SetButtonUserData(user_data=self.designer.generate_waveform)
-        self.designer.stop_waveform_button.SetButtonCallback(callback=View.StopWaveFormButtonCallback)
-        self.designer.stop_waveform_button.SetButtonUserData(user_data=self.designer.generate_waveform)
-        self.designer.clear_plot_button.SetButtonCallback(callback=View.ClearPlotsButtonCallback)
-        self.designer.clear_plot_button.SetButtonUserData(user_data=self.designer.clear_plots)
-        self.designer.frequency_slider.SetSliderCallback(callback=View.FrequencySliderCallback)
-        self.designer.frequency_slider.SetSliderUserData(user_data=self.designer)
+        self.generate_waveform_button.SetButtonCallback(callback=View.GenerateWaveFormButtonCallback)
+        self.generate_waveform_button.SetButtonUserData(user_data=self)
+        #self.generate_waveform_button.SetButtonUserData(user_data=self.designer.generate_waveform)
+        self.stop_waveform_button.SetButtonCallback(callback=View.StopWaveFormButtonCallback)
+        self.stop_waveform_button.SetButtonUserData(user_data=self)
+        #self.stop_waveform_button.SetButtonUserData(user_data=self.designer.generate_waveform)
+        self.clear_plot_button.SetButtonCallback(callback=View.ClearPlotsButtonCallback)
+        self.clear_plot_button.SetButtonUserData(user_data=self)
+        #self.clear_plot_button.SetButtonUserData(user_data=self.designer.clear_plots)
+        self.frequency_slider.SetSliderCallback(callback=View.FrequencySliderCallback)
+        self.frequency_slider.SetSliderUserData(user_data=self)
+        #self.frequency_slider.SetSliderUserData(user_data=self.designer)
+
+    @property
+    def get_frequency(self) -> float:
+        """
+        Gets the frequency from the slider
+        """
+        return self.frequency_slider.GetSliderValue()
+    
+    @property
+    def set_angular_frequency(self, angular_frequency: float) -> None:
+        """
+        Sets the angular frequency to the label
+        """
+        self.angular_label.SetLabel(f"Angular Freq: {'{:.3f}'.format(angular_frequency)}")
+
+    @property
+    def set_period(self, period: float) -> None:
+        """
+        Sets the period to the label
+        """
+        self.period_label.SetLabel(f"Period: {'{:.3f}'.format(period)}")
 
     @staticmethod
     def GenerateWaveFormButtonCallback(sender: typing.Any, app: typing.Any, user: typing.Any) -> None:
