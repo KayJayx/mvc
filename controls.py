@@ -2,6 +2,7 @@
 #   This code acts as a wrapper for the DearPyGUI framework, to more easily make
 #   calls to the API in a module way.
 #************************************************************************************
+from __future__ import annotations
 import dearpygui.dearpygui as dpg
 import typing
 
@@ -105,9 +106,16 @@ class Control():
     Base class for all other control classes
     """
 
-    def __init__(self) -> None:
-        self.tag      = None
-        self.children = []
+    def __init__(self, parent: Control) -> None:
+        self.tag             = None
+        self.theme           = dpg.add_theme()
+        self.theme_component = None
+        self.parent          = parent
+        self.children        = []
+
+        # Add self as a child to the parent
+        if self.parent is not None and isinstance(self.parent, Control):
+            self.parent.children.append(self)
 
     def Destroy(self) -> None:
         """
@@ -180,6 +188,32 @@ class Control():
         Get the value of the control
         """
         return dpg.get_value(self.tag)
+    
+    def ChangePadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> None:
+        """
+        Change padding for the item
+        """
+        dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=self.theme_component)
+        dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=self.theme_component)
+        dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=self.theme_component)
+
+        return self
+    
+    def ChangeRounding(self, frame_rounding: int = 0) -> None:
+        """
+        Change the rounding of the item
+        """
+        dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, frame_rounding, category=dpg.mvThemeCat_Core, parent=self.theme_component)
+
+        return self
+    
+    def BindTheme(self) -> None:
+        """
+        Binds the theme to the item
+        """
+        dpg.bind_item_theme(self.tag, self.theme)
+
+        return self
 
 class Menu(Control):
 
@@ -188,18 +222,13 @@ class Menu(Control):
     """
 
     def __init__(self, label: str = None, indent: int = -1, parent: Control = None) -> None:
-        super().__init__()
-        self.parent          = parent
-        self.menu_theme      = dpg.add_theme()
-        self.theme_component = dpg.add_theme_component(dpg.mvMenu, parent=self.menu_theme)
+        super().__init__(parent=parent)
+        self.theme_component = dpg.add_theme_component(dpg.mvMenu, parent=self.theme)
         self.tag             = dpg.add_menu(
             label=label,
             indent=indent,
             parent=self.parent.tag
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
 
     def AddMenuItem(self, label: str = None, callback: typing.Any = None, user_data: typing.Any = None) -> None:
         """
@@ -225,43 +254,6 @@ class Menu(Control):
 
         return self
 
-    def ChangeMenuPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> None:
-        """
-        Change padding for the menu items
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.menu_theme)
-
-        return self
-
-    # Stub out the existing functions from the base class 
-    def Enable(self) -> None: pass
-
-    def Disable(self) -> None: pass
-
-    def IsEnabled(self) -> bool: pass
-
-    def Show(self) -> None: pass
-        
-    def Hide(self) -> None: pass
-
-    def IsShown(self) -> bool: pass
-
-    def GetPosition(self) -> 'list[int]': pass
-    
-    def GetWidth(self) -> int: pass
-    
-    def GetHeight(self) -> int: pass
-
 class MenuBar(Control):
 
     """
@@ -269,47 +261,17 @@ class MenuBar(Control):
     """
 
     def __init__(self, label: str = None, parent: Control = None) -> None:
-        super().__init__()
-        self.parent = parent
-        self.tag    = dpg.add_menu_bar(
+        super().__init__(parent=parent)
+        self.tag = dpg.add_menu_bar(
             label=label,
             parent=self.parent.tag
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
 
     def AddMenu(self, label: str = None, indent: int = -1) -> Menu:
         """
         Add a menu to the menu bar
         """
-        
-        menu = Menu(
-            label=label,
-            indent=indent,
-            parent=self
-        )
-
-        return menu
-
-    # Stub out the existing functions from the base class 
-    def Enable(self) -> None: pass
-
-    def Disable(self) -> None: pass
-
-    def IsEnabled(self) -> bool: pass
-
-    def Show(self) -> None: pass
-        
-    def Hide(self) -> None: pass
-
-    def IsShown(self) -> bool: pass
-
-    def GetPosition(self) -> 'list[int]': pass
-    
-    def GetWidth(self) -> int: pass
-    
-    def GetHeight(self) -> int: pass
+        return Menu(label=label, indent=indent, parent=self)
 
 class Tab(Control):
 
@@ -318,35 +280,12 @@ class Tab(Control):
     """
 
     def __init__(self, label: str = None, indent: int = -1, parent: Control = None) -> None:
-        super().__init__()
-        self.parent = parent
-        self.tag    = dpg.add_tab(
+        super().__init__(parent=parent)
+        self.tag = dpg.add_tab(
             label=label,
             indent=indent,
             parent=self.parent.tag
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
-
-    # Stub out the existing functions from the base class 
-    def Enable(self) -> None: pass
-
-    def Disable(self) -> None: pass
-
-    def IsEnabled(self) -> bool: pass
-
-    def Show(self) -> None: pass
-        
-    def Hide(self) -> None: pass
-
-    def IsShown(self) -> bool: pass
-
-    def GetPosition(self) -> 'list[int]': pass
-    
-    def GetWidth(self) -> int: pass
-    
-    def GetHeight(self) -> int: pass
 
 class TabBar(Control):
 
@@ -355,47 +294,17 @@ class TabBar(Control):
     """
 
     def __init__(self, label: str = None, parent: Control = None) -> None:
-        super().__init__()
-        self.parent = parent
-        self.tag    = dpg.add_tab_bar(
+        super().__init__(parent=parent)
+        self.tag = dpg.add_tab_bar(
             label=label,
             parent=self.parent.tag
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
 
     def AddTab(self, label: str = None, indent: int = -1) -> Tab:
         """
         Add a tab to the tab bar
         """
-
-        tab = Tab(
-            label=label,
-            indent=indent,
-            parent=self
-        )
-
-        return tab
-
-    # Stub out the existing functions from the base class 
-    def Enable(self) -> None: pass
-
-    def Disable(self) -> None: pass
-
-    def IsEnabled(self) -> bool: pass
-
-    def Show(self) -> None: pass
-        
-    def Hide(self) -> None: pass
-
-    def IsShown(self) -> bool: pass
-
-    def GetPosition(self) -> 'list[int]': pass
-    
-    def GetWidth(self) -> int: pass
-    
-    def GetHeight(self) -> int: pass
+        return Tab(label=label, indent=indent, parent=self)
 
 class DragAndDropPayloadExtension(Control):
 
@@ -406,9 +315,8 @@ class DragAndDropPayloadExtension(Control):
     def __init__(self, label: str = None, drag_data: typing.Any = None, 
                  drop_data: typing.Any = None, user_data: typing.Any = None, 
                  payload_type: str = '$$DPG_PAYLOAD', parent: Control = None) -> None:
-        super().__init__()
-        self.parent = parent
-        self.tag    = dpg.add_drag_payload(
+        super().__init__(parent=parent)
+        self.tag = dpg.add_drag_payload(
             label=label,
             drag_data=drag_data,
             drop_data=drop_data,
@@ -416,28 +324,6 @@ class DragAndDropPayloadExtension(Control):
             payload_type=payload_type,
             parent=self.parent.tag
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
-
-    # Stub out the existing functions from the base class 
-    def Enable(self) -> None: pass
-
-    def Disable(self) -> None: pass
-
-    def IsEnabled(self) -> bool: pass
-
-    def Show(self) -> None: pass
-        
-    def Hide(self) -> None: pass
-
-    def IsShown(self) -> bool: pass
-
-    def GetPosition(self) -> 'list[int]': pass
-    
-    def GetWidth(self) -> int: pass
-    
-    def GetHeight(self) -> int: pass
 
 class CollapseHeader(Control):
 
@@ -448,11 +334,9 @@ class CollapseHeader(Control):
     def __init__(self, label: str = None, indent: int = -1, pos: 'list[int]' = [], parent: Control = None,
                  closable: bool = False, default_open: bool = False, open_on_double_click: bool = False,
                  open_on_arrow: bool = False, leaf: bool = False, bullet: bool = False) -> None:
-        super().__init__()
-        self.parent                = parent
-        self.collapse_header_theme = dpg.add_theme()
-        self.theme_component       = dpg.add_theme_component(dpg.mvCollapsingHeader, parent=self.collapse_header_theme)
-        self.tag                   = dpg.add_collapsing_header(
+        super().__init__(parent=parent)
+        self.theme_component = dpg.add_theme_component(dpg.mvCollapsingHeader, parent=self.theme)
+        self.tag             = dpg.add_collapsing_header(
             label=label,
             indent=indent,
             pos=pos,
@@ -464,35 +348,6 @@ class CollapseHeader(Control):
             leaf=leaf,
             bullet=bullet
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
-
-    def ChangeCollapseHeaderPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> None:
-        """
-        Change padding for the control
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def ChangeCollapseHeaderRounding(self, frame_rounding: int = 0) -> None:
-        """
-        Change the rounding of the collapse header
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, frame_rounding, category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.collapse_header_theme)
-
-        return self
 
 class Window(Control):
 
@@ -509,16 +364,14 @@ class Window(Control):
                  no_close: bool = False, no_background: bool = False, modal: bool = False,
                  popup: bool = False, no_saved_settings: bool = False, 
                  no_open_over_existing_popup: bool = True, on_close: typing.Any = None) -> None:
-        super().__init__()
-        self.add_menubar     = add_menubar
-        self.window_theme    = dpg.add_theme()
-        self.theme_component = dpg.add_theme_component(dpg.mvWindowAppItem, parent=self.window_theme)
-        self.tag = dpg.add_window(
+        super().__init__(parent=None)
+        self.theme_component = dpg.add_theme_component(dpg.mvWindowAppItem, parent=self.theme)
+        self.tag             = dpg.add_window(
             label=label,
             width=width,
             height=height,
             pos=pos,
-            menubar=self.add_menubar,
+            menubar=add_menubar,
             min_size=min_size,
             max_size=max_size,
             collapsed=collapsed,
@@ -540,7 +393,7 @@ class Window(Control):
             on_close=on_close
         )
 
-        if self.add_menubar:
+        if add_menubar:
 
             # Create the menu bar control
             self.menu_bar = MenuBar(label=f"{label}_menu_bar", parent=self)
@@ -560,24 +413,6 @@ class Window(Control):
         dpg.add_theme_color(dpg.mvThemeCol_WindowBg, color, category=dpg.mvThemeCat_Core, parent=self.theme_component)
 
         return self
-    
-    def ChangeWindowPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> None:
-        """
-        Change padding for the controls in the window
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.window_theme)
-
-        return self
 
 class ChildWindow(Control):
 
@@ -590,18 +425,15 @@ class ChildWindow(Control):
                  drop_callback: typing.Any = None, user_data: typing.Any = None,
                  payload_type: str = '$$DPG_PAYLOAD', border: bool = True, autosize_x: bool = False,
                  autosize_y: bool = False, no_scrollbar: bool = False, horizontal_scrollbar: bool = False) -> None:
-        super().__init__()
-        self.add_menubar        = add_menubar
-        self.misc_data          = []
-        self.parent             = parent
-        self.child_window_theme = dpg.add_theme()
-        self.theme_component    = dpg.add_theme_component(dpg.mvChildWindow, parent=self.child_window_theme)
-        self.tag                = dpg.add_child_window(
+        super().__init__(parent=parent)
+        self.misc_data       = []
+        self.theme_component = dpg.add_theme_component(dpg.mvChildWindow, parent=self.theme)
+        self.tag             = dpg.add_child_window(
             label=label,
             width=width,
             height=height,
             pos=pos,
-            menubar=self.add_menubar,
+            menubar=add_menubar,
             parent=self.parent.tag,
             drop_callback=drop_callback,
             user_data=user_data,
@@ -613,23 +445,10 @@ class ChildWindow(Control):
             horizontal_scrollbar=horizontal_scrollbar
         )
 
-        if self.add_menubar:
+        if add_menubar:
 
             # Create the menu bar control
             self.menu_bar = MenuBar(label=f"{label}_menu_bar", parent=self)
-        
-        # Add self as a child to the parent
-        self.parent.children.append(self)
-    
-    def ChangeChildWindowPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> None:
-        """
-        Change padding for the controls in the child window
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
     
     def ChangeWindowBackgroundColor(self, color: 'list[int]') -> None:
         """
@@ -644,22 +463,6 @@ class ChildWindow(Control):
         Changes the color of the windows border
         """
         dpg.add_theme_color(dpg.mvThemeCol_Border, color, category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def ChangeWindowRounding(self, rounding: int) -> None:
-        """
-        Changes the rounding of the window
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_ChildRounding, rounding, category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.child_window_theme)
 
         return self
     
@@ -682,11 +485,9 @@ class Button(Control):
                  drag_callback: typing.Any = None, drop_callback: typing.Any = None,
                  user_data: typing.Any = None, payload_type: str = '$$DPG_PAYLOAD', small: bool = False,
                  arrow: bool = False, direction: int = 0) -> None:
-        super().__init__()
-        self.parent          = parent
+        super().__init__(parent=parent)
         self.payload_type    = payload_type
-        self.button_theme    = dpg.add_theme()
-        self.theme_component = dpg.add_theme_component(dpg.mvButton, parent=self.button_theme)
+        self.theme_component = dpg.add_theme_component(dpg.mvButton, parent=self.theme)
         self.tag             = dpg.add_button(
             label=label,
             width=width,
@@ -703,9 +504,6 @@ class Button(Control):
             direction=direction
         )
 
-        # Add self as a child to the parent
-        self.parent.children.append(self)
-
     def AddBorder(self, border_size: float = 0.6) -> None:
         """
         Add a border to the button
@@ -719,14 +517,6 @@ class Button(Control):
         Change the color of the background of the button
         """
         dpg.add_theme_color(dpg.mvThemeCol_Button, color, category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.button_theme)
 
         return self
     
@@ -770,10 +560,8 @@ class Group(Control):
                  pos: 'list[int]' = [], horizontal: bool = False, parent: Control = None, 
                  drag_callback: typing.Any = None, drop_callback: typing.Any = None, 
                  user_data: typing.Any = None, payload_type: str = '$$DPG_PAYLOAD') -> None:
-        super().__init__()
-        self.parent          = parent
-        self.group_theme     = dpg.add_theme()
-        self.theme_component = dpg.add_theme_component(dpg.mvGroup, parent=self.group_theme)
+        super().__init__(parent=parent)
+        self.theme_component = dpg.add_theme_component(dpg.mvGroup, parent=self.theme)
         self.tag             = dpg.add_group(
             label=label,
             width=width,
@@ -787,27 +575,6 @@ class Group(Control):
             payload_type=payload_type
         )
 
-        # Add self as a child to the parent
-        self.parent.children.append(self)
-
-    def ChangeGroupPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> None:
-        """
-        Change padding for the controls in the group container
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.group_theme)
-
-        return self
-
 class Label(Control):
 
     """
@@ -818,10 +585,8 @@ class Label(Control):
                  bullet: bool = False, color: 'list[int]' = (-255, 0, 0, 255), indent: int = -1,
                  parent: Control = None, drag_callback: typing.Any = None,
                  drop_callback: typing.Any = None, user_data: typing.Any = None) -> None:
-        super().__init__()
-        self.parent          = parent
-        self.label_theme     = dpg.add_theme()
-        self.theme_component = dpg.add_theme_component(dpg.mvText, parent=self.label_theme)
+        super().__init__(parent=parent)
+        self.theme_component = dpg.add_theme_component(dpg.mvText, parent=self.theme)
         self.tag             = dpg.add_text(
             default_value=label,
             label=label,
@@ -835,27 +600,6 @@ class Label(Control):
             drop_callback=drop_callback,
             user_data=user_data
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
-
-    def ChangeLabelPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> None:
-        """
-        Change padding for the control
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.label_theme)
-
-        return self
     
     def SetLabel(self, label: str) -> None:
         """
@@ -879,13 +623,12 @@ class LineSeparator(Control):
     Line Separator Control, creates a line separator within a window
     """
 
-    def __init__(self, label: str = None, pos: 'list[int]' = [], parent: Control = None) -> None:
-        super().__init__(tag=None, label=label)
-        self.parent = parent
-        self.tag    = dpg.add_separator(pos=pos, parent=self.parent.tag)
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
+    def __init__(self, pos: 'list[int]' = [], parent: Control = None) -> None:
+        super().__init__(parent=parent)
+        self.tag = dpg.add_separator(
+            pos=pos,
+            parent=self.parent.tag
+        )
 
 class Plot(Control):
 
@@ -911,13 +654,11 @@ class Plot(Control):
                  query_toggle_mod: int = dpg.internal_dpg.mvKey_Control,
                  horizontal_mod: int = dpg.internal_dpg.mvKey_Alt,
                  vertical_mod: int = dpg.internal_dpg.mvKey_Shift) -> None:
-        super().__init__()
+        super().__init__(parent=parent)
         self.one_plot_at_a_time     = one_plot_at_a_time
         self.override_plot_on_entry = override_plot_on_entry
-        self.parent                 = parent
-        self.plot_theme             = dpg.add_theme()
-        self.candle_theme_component = dpg.add_theme_component(dpg.mvCandleSeries, parent=self.plot_theme)
-        self.line_theme_component   = dpg.add_theme_component(dpg.mvLineSeries, parent=self.plot_theme)
+        self.candle_theme_component = dpg.add_theme_component(dpg.mvCandleSeries, parent=self.theme)
+        self.line_theme_component   = dpg.add_theme_component(dpg.mvLineSeries, parent=self.theme)
         self.tag                    = dpg.add_plot(
             label=label,
             width=width,
@@ -971,9 +712,6 @@ class Plot(Control):
             "3mo" : dpg.mvTimeUnit_Mo
         }
         self.no_children_onetime_only = True
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
 
     def AddPlot(self, x_label: str, y_label: str, add_legend: bool = False, x_time: bool = False, y_time: bool = False, 
                 x_lock_min: bool = False, x_lock_max: bool = False, y_lock_min: bool = False, y_lock_max: bool = False,
@@ -1195,29 +933,11 @@ class Plot(Control):
 
         return self
     
-    def ChangePlotPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]', theme_component: int) -> None:
-        """
-        Change padding for the control
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=theme_component)
-
-        return self
-    
     def AddBorderToLegend(self, theme_component: int, border_size: float = 0.6) -> None:
         """
         Adds a border to the legend
         """
         dpg.add_theme_style(dpg.mvStyleVar_PopupBorderSize, border_size, category=dpg.mvThemeCat_Core, parent=theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.plot_theme)
 
         return self
 
@@ -1231,11 +951,9 @@ class ListBox(Control):
                  label: str = None, width: int = 0, pos: 'list[int]' = [], parent: Control = None, 
                  callback: typing.Any = None, drag_callback: typing.Any = None, 
                  user_data: typing.Any = None, payload_type: str = '$$DPG_PAYLOAD') -> None:
-        super().__init__()
-        self.parent          = parent
+        super().__init__(parent=parent)
         self.payload_type    = payload_type
-        self.listbox_theme   = dpg.add_theme()
-        self.theme_component = dpg.add_theme_component(dpg.mvListbox, parent=self.listbox_theme)
+        self.theme_component = dpg.add_theme_component(dpg.mvListbox, parent=self.theme)
         self.tag             = dpg.add_listbox(
             items=items,
             num_items=num_items,
@@ -1249,9 +967,6 @@ class ListBox(Control):
             user_data=user_data,
             payload_type=self.payload_type
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
 
     def AddToListBox(self, item: str) -> None:
         """
@@ -1284,24 +999,6 @@ class ListBox(Control):
         Gets the selected item from the listbox
         """
         return self.GetValue()
-    
-    def ChangeListBoxPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> None:
-        """
-        Change padding for the control
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.listbox_theme)
-
-        return self
     
     def MakeDragSource(self, drag_data: typing.Any = None) -> DragAndDropPayloadExtension:
         """
@@ -1346,12 +1043,10 @@ class InputTextBox(Control):
                  uppercase: bool = False, tab_input: bool = False, decimal: bool = False, 
                  hexadecimal: bool = False, readonly: bool = False, password: bool = False, 
                  scientific: bool = False, on_enter: bool = False) -> None:
-        super().__init__()
-        self.parent          = parent
+        super().__init__(parent=parent)
         self.payload_type    = payload_type
-        self.textbox_theme   = dpg.add_theme()
-        self.theme_component = dpg.add_theme_component(dpg.mvInputText, parent=self.textbox_theme)
-        self.disabled_theme  = dpg.add_theme_component(dpg.mvInputText, parent=self.textbox_theme, enabled_state=False)
+        self.theme_component = dpg.add_theme_component(dpg.mvInputText, parent=self.theme)
+        self.disabled_theme  = dpg.add_theme_component(dpg.mvInputText, parent=self.theme, enabled_state=False)
         self.tag             = dpg.add_input_text(
             label=label,
             width=width,
@@ -1376,9 +1071,6 @@ class InputTextBox(Control):
             scientific=scientific,
             on_enter=on_enter
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
 
     def AddBorder(self, border_size: float = 0.6, theme_component: int = None) -> None:
         """
@@ -1413,14 +1105,6 @@ class InputTextBox(Control):
         dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=theme_component)
         dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=theme_component)
         dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.textbox_theme)
 
         return self
     
@@ -1493,11 +1177,9 @@ class DateSelect(Control):
     def __init__(self, label: str = None, default_value: dict = { 'month_day': 14,'year': 20,'month': 5 },
                  level: int = 0, pos: 'list[int]' = [], parent: Control = None, callback: typing.Any = None, 
                  user_data: typing.Any = None) -> None:
-        super().__init__()
-        self.parent            = parent
-        self.date_picker_theme = dpg.add_theme()
-        self.theme_component   = dpg.add_theme_component(dpg.mvDatePicker, parent=self.date_picker_theme)
-        self.tag               = dpg.add_date_picker(
+        super().__init__(parent=parent)
+        self.theme_component = dpg.add_theme_component(dpg.mvDatePicker, parent=self.theme)
+        self.tag             = dpg.add_date_picker(
             label=label,
             default_value=default_value,
             level=level,
@@ -1506,27 +1188,6 @@ class DateSelect(Control):
             callback=callback,
             user_data=user_data
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
-
-    def ChangeDateSelectPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> None:
-        """
-        Change padding for the control
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.date_picker_theme)
-
-        return self
     
     def SetDateSelectCallback(self, callback: typing.Any) -> None:
         """
@@ -1592,12 +1253,10 @@ class TimeSelect(Control):
     def __init__(self, label: str = None, default_value: dict = { 'hour': 14,'min': 32,'sec': 23 },
                  pos: 'list[int]' = [], hour24: bool = False, parent: Control = None, callback: typing.Any = None, 
                  user_data: typing.Any = None) -> None:
-        super().__init__()
-        self.parent            = parent
-        self.hour24            = hour24
-        self.time_picker_theme = dpg.add_theme()
-        self.theme_component   = dpg.add_theme_component(dpg.mvTimePicker, parent=self.time_picker_theme)
-        self.tag               = dpg.add_time_picker(
+        super().__init__(parent=parent)
+        self.hour24          = hour24
+        self.theme_component = dpg.add_theme_component(dpg.mvTimePicker, parent=self.theme)
+        self.tag             = dpg.add_time_picker(
             label=label,
             default_value=default_value,
             pos=pos,
@@ -1606,27 +1265,6 @@ class TimeSelect(Control):
             callback=callback,
             user_data=user_data
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
-
-    def ChangeTimeSelectPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> None:
-        """
-        Change padding for the control
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.time_picker_theme)
-
-        return self
     
     def GetSelectedTimeString(self, get_24hr: bool = False) -> str:
         """
@@ -1695,10 +1333,8 @@ class ComboBox(Control):
                  pos: 'list[int]' = [], parent: Control = None, callback: typing.Any = None, 
                  drag_callback: typing.Any = None, user_data: typing.Any = None, 
                  payload_type: str = '$$DPG_PAYLOAD') -> None:
-        super().__init__()
-        self.parent          = parent
-        self.combobox_theme  = dpg.add_theme()
-        self.theme_component = dpg.add_theme_component(dpg.mvCombo, parent=self.combobox_theme)
+        super().__init__(parent=parent)
+        self.theme_component = dpg.add_theme_component(dpg.mvCombo, parent=self.theme)
         self.tag             = dpg.add_combo(
             items=items,
             default_value=default_value,
@@ -1711,9 +1347,6 @@ class ComboBox(Control):
             user_data=user_data,
             payload_type=payload_type
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
 
     def AddToComboBox(self, item: str) -> None:
         """
@@ -1763,24 +1396,6 @@ class ComboBox(Control):
 
         return self
     
-    def ChangeComboBoxPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> None:
-        """
-        Change padding for the control
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.combobox_theme)
-
-        return self
-    
     def SetComboBoxDragCallback(self, callback: typing.Any) -> None:
         """
         Set the drag callback for the combobox control
@@ -1813,10 +1428,8 @@ class CheckBox(Control):
 
     def __init__(self, default_value: bool = False, label: str = None, pos: 'list[int]' = [], 
                  parent: Control = None, callback: typing.Any = None, user_data: typing.Any = None) -> None:
-        super().__init__()
-        self.parent          = parent
-        self.checkbox_theme  = dpg.add_theme()
-        self.theme_component = dpg.add_theme_component(dpg.mvCheckbox, parent=self.checkbox_theme)
+        super().__init__(parent=parent)
+        self.theme_component = dpg.add_theme_component(dpg.mvCheckbox, parent=self.theme)
         self.tag             = dpg.add_checkbox(
             default_value=default_value,
             label=label,
@@ -1825,27 +1438,6 @@ class CheckBox(Control):
             callback=callback,
             user_data=user_data
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
-
-    def ChangeCheckBoxPadding(self, window_pad: 'list[int]', frame_pad: 'list[int]', item_spacing: 'list[int]') -> None:
-        """
-        Change padding for the control
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, window_pad[0],   window_pad[1],   category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_FramePadding,  frame_pad[0],    frame_pad[1],    category=dpg.mvThemeCat_Core, parent=self.theme_component)
-        dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing,   item_spacing[0], item_spacing[1], category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
-    
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.checkbox_theme)
-
-        return self
     
     def SetCheckBoxCallback(self, callback: typing.Any) -> None:
         """
@@ -1884,16 +1476,12 @@ class TableRow(Control):
     """
 
     def __init__(self, label: str = None, height: int = 0, parent: Control = None) -> None:
-        super().__init__()
-        self.parent = parent
-        self.tag    = dpg.add_table_row(
+        super().__init__(parent=parent)
+        self.tag = dpg.add_table_row(
             label=label,
             height=height,
             parent=self.parent.tag
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
 
     def AddEmptyColumnEntry(self, label: str = None, height: int = 0) -> None:
         """
@@ -1921,9 +1509,8 @@ class TableColumn(Control):
                  no_header_width: bool = False, prefer_sort_ascending: bool = True,
                  prefer_sort_descending: bool = False, indent_enable: bool = False, 
                  indent_disable: bool = False) -> None:
-        super().__init__()
-        self.parent = parent
-        self.tag    = dpg.add_table_column(
+        super().__init__(parent=parent)
+        self.tag = dpg.add_table_column(
             label=label,
             width=width,
             parent=self.parent.tag,
@@ -1947,9 +1534,6 @@ class TableColumn(Control):
             indent_disable=indent_disable
         )
 
-        # Add self as a child to the parent
-        self.parent.children.append(self)
-
 class Table(Control):
 
     """
@@ -1968,10 +1552,8 @@ class Table(Control):
                  precise_widths: bool = False, no_clip: bool = False, pad_outerX: bool = False,
                  no_pad_outerX: bool = False, no_pad_innerX: bool = False, scrollX: bool = False,
                  scrollY: bool = False, no_saved_settings: bool = False) -> None:
-        super().__init__()
-        self.parent          = parent
-        self.table_theme     = dpg.add_theme()
-        self.theme_component = dpg.add_theme_component(dpg.mvTable, parent=self.table_theme)
+        super().__init__(parent=parent)
+        self.theme_component = dpg.add_theme_component(dpg.mvTable, parent=self.theme)
         self.tag             = dpg.add_table(
             label=label,
             width=width,
@@ -2010,9 +1592,6 @@ class Table(Control):
             scrollY=scrollY,
             no_saved_settings=no_saved_settings
         )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
 
     def AddColumn(self, label: str = None, width: int = 0, enabled: bool = True,
                   init_width_or_weight: float = 0, default_hide: bool = False, default_sort: bool = False,
@@ -2056,18 +1635,7 @@ class Table(Control):
         """
         Adds a row to the table
         """
-
-        table_row = TableRow(label=label, height=height, parent=self)
-
-        return table_row
-    
-    def ChangeTablePadding(self, cell_padding: 'list[int]') -> None:
-        """
-        Change padding for the control
-        """
-        dpg.add_theme_style(dpg.mvStyleVar_CellPadding, cell_padding[0], cell_padding[1], category=dpg.mvThemeCat_Core, parent=self.theme_component)
-
-        return self
+        return TableRow(label=label, height=height, parent=self)
     
     def SetTableCallback(self, callback: typing.Any) -> None:
         """
@@ -2085,14 +1653,6 @@ class Table(Control):
 
         return self
     
-    def BindTheme(self) -> None:
-        """
-        Binds the theme to the item
-        """
-        dpg.bind_item_theme(self.tag, self.table_theme)
-
-        return self
-    
 class LoadingIndicator(Control):
 
     """
@@ -2103,9 +1663,8 @@ class LoadingIndicator(Control):
                  pos: 'list[int]' = [], parent: Control = None, style: int = 0, circle_count: int = 8,
                  speed: float = 1, radius: float = 3, thickness: float = 1, color: 'list[int]' = [51, 51, 55, 255],
                  secondary_color: 'list[int]' = [29, 151, 236, 103]) -> None:
-        super().__init__()
-        self.parent = parent
-        self.tag    = dpg.add_loading_indicator(
+        super().__init__(parent=parent)
+        self.tag = dpg.add_loading_indicator(
             label=label,
             width=width,
             height=height,
@@ -2121,9 +1680,6 @@ class LoadingIndicator(Control):
             secondary_color=secondary_color
         )
 
-        # Add self as a child to the parent
-        self.parent.children.append(self)
-
 class Slider(Control):
 
     """
@@ -2135,8 +1691,7 @@ class Slider(Control):
                  pos: 'list[int]' = [], default_value: typing.Union[float, int] = 0, vertical: bool = False, no_input: bool = False,
                  clamped: bool = False, min_value: typing.Union[float, int] = 0, max_value: typing.Union[float, int] = 100,
                  format: str = None) -> None:
-        super().__init__()
-        self.parent = parent
+        super().__init__(parent=parent)
         if type == float:
             self.tag = dpg.add_slider_float(
                 label=label,
@@ -2175,9 +1730,6 @@ class Slider(Control):
                 max_value=max_value,
                 format=format if format is not None else '%d'
             )
-
-        # Add self as a child to the parent
-        self.parent.children.append(self)
 
     def GetSliderValue(self) -> float:
         """
