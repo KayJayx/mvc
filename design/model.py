@@ -38,4 +38,6 @@ class Model():
     """
 
     def __init__(self) -> None:
+
+        # Create models here
         self.gen_button_model = ButtonSwitchModel()
