@@ -1,5 +1,23 @@
-from design.view import View
-from design.model import Model
+from __future__ import annotations
+import design.model as model
+import design.view as view
+
+class ButtonSwitchController():
+
+    """
+    The responsibility of this class is to act a bridge between the button model and view classes.
+    """
+
+    def __init__(self, button_model: model.ButtonSwitchModel, button_view: view.ButtonSwitchView) -> None:
+        self.button_model = button_model
+        self.button_view  = button_view
+        self.button_view.AttachController(controller=self)
+
+    def OnButtonClick(self) -> None:
+        """
+        When the user clicks the button
+        """
+        self.button_model.SetClickEvent()
 
 class Controller():
 
@@ -13,8 +31,11 @@ class Controller():
     def __init__(self) -> None:
 
         # Create instances of the View and Model classes
-        self.view  = View()
-        self.model = Model()
+        self.view  = view.View()
+        self.model = model.Model()
+
+        # Create controllers here
+        self.gen_button_controller = ButtonSwitchController(self.model.gen_button_model, self.view.gen_button_view)
 
         # Run the designer to actually display the info to the screen
         self.view.Run()
