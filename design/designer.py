@@ -2,6 +2,7 @@ import controls as cc
 import tkinter as tk
 import numpy as np
 import threading
+import typing
 import os
 
 class Designer():
@@ -150,7 +151,7 @@ class Designer():
             min_height=self.screen_height
         )
 
-    def Run(self) -> None:
+    def Run(self, callback: typing.Any = None, user_data: typing.Any = None) -> None:
         """
         Run the main loop for rendering.
         """
@@ -163,7 +164,12 @@ class Designer():
         # Main loop
         while cc.dpg.is_dearpygui_running():
 
-            # TODO: Add stuff here
+            # Call a user defined function here
+            if callback is not None:
+                if user_data is not None:
+                    callback(user_data)
+                else:
+                    callback()
 
             # Render the GUI frame
             cc.dpg.render_dearpygui_frame()
