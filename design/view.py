@@ -1,32 +1,41 @@
+from __future__ import annotations
 from design.designer import Designer
 from design.designer import cc
+import design.controller as controller
 import typing
 
-class UIControl():
+class ButtonSwitchView():
 
     """
-    The responsibility of this class is to tie a control which will set off an event
-    to a controller class instance.
+    The responsibility of this class is to take in a button control, tie the control
+    with a controller or listener and forward info to the controller or listener.
     """
 
-    def __init__(self, control: cc.Control) -> None:
-        self.control  = control
-        self.listener = None
+    def __init__(self, button: cc.Button) -> None:
+        self.button     = button
+        self.controller = None
 
-    def AttachListener(self, controller: typing.Any) -> None:
+        # Set the callback for the button to be this classes method
+        self.button.SetCallback(self.OnButtonClick)
+
+    def AttachController(self, controller: controller.ButtonSwitchController) -> None:
         """
-        Attach an instance of the controller class that should listen for events from
-        this UI Control
+        Attach a listener controller to the view
         """
-        self.listener = controller
+        self.controller = controller
+
+    def OnButtonClick(self) -> None:
+        """
+        When the user clicks the button
+        """
+        self.controller.OnButtonClick()
 
 class View(Designer):
 
     """
     The responsibility of the View is to get user input and display data to the user.
     The View is also tightly coupled with the designer class, as it holds the actual
-    objects which are displayed to the user. In this case, the View class just holds
-    the callback functions for the controls we plan on using.
+    objects which are displayed to the user.
     """
 
     def __init__(self) -> None:
@@ -34,43 +43,29 @@ class View(Designer):
         # Create an instance of the base designer class
         super().__init__()
 
-        # Add the user data and callback functions here
-        # IDEA: We can create classes that take the control object as input in the constructor
-        # and all this class does is tie a controller to the control object, in other words
-        # register a listener object
-        self.generate_waveform_button.SetCallback(callback=View.GenerateWaveFormButtonCallback)
-        self.generate_waveform_button.SetUserData(user_data=self)
-        #self.generate_waveform_button.SetButtonUserData(user_data=self.designer.generate_waveform)
-        self.stop_waveform_button.SetCallback(callback=View.StopWaveFormButtonCallback)
-        self.stop_waveform_button.SetUserData(user_data=self)
-        #self.stop_waveform_button.SetButtonUserData(user_data=self.designer.generate_waveform)
-        self.clear_plot_button.SetCallback(callback=View.ClearPlotsButtonCallback)
-        self.clear_plot_button.SetUserData(user_data=self)
-        #self.clear_plot_button.SetButtonUserData(user_data=self.designer.clear_plots)
-        self.frequency_slider.SetCallback(callback=View.FrequencySliderCallback)
-        self.frequency_slider.SetUserData(user_data=self)
-        #self.frequency_slider.SetSliderUserData(user_data=self.designer)
+        # Create views here
+        self.gen_button_view = ButtonSwitchView(button=self.generate_waveform_button)
 
     @property
     def get_frequency(self) -> float:
         """
         Gets the frequency from the slider
         """
-        return self.frequency_slider.GetSliderValue()
+        return self.frequency_slider.GetValue()
     
     @property
     def set_angular_frequency(self, angular_frequency: float) -> None:
         """
         Sets the angular frequency to the label
         """
-        self.angular_label.SetLabel(f"Angular Freq: {'{:.3f}'.format(angular_frequency)}")
+        self.angular_label.SetValue(f"Angular Freq: {'{:.3f}'.format(angular_frequency)}")
 
     @property
     def set_period(self, period: float) -> None:
         """
         Sets the period to the label
         """
-        self.period_label.SetLabel(f"Period: {'{:.3f}'.format(period)}")
+        self.period_label.SetValue(f"Period: {'{:.3f}'.format(period)}")
 
     @staticmethod
     def GenerateWaveFormButtonCallback(sender: typing.Any, app: typing.Any, user: typing.Any) -> None:
