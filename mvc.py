@@ -1,4 +1,4 @@
-from design.controller import Controller
+from design.controllers._controller import Controller
 
 def main() -> None:
     

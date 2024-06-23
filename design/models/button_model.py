@@ -1,7 +1,6 @@
-from __future__ import annotations
 import threading
 
-class ButtonSwitchModel():
+class ButtonModel():
 
     """
     The responsibility of this class is to hold state information about a button as
@@ -29,15 +28,11 @@ class ButtonSwitchModel():
         """
         self.click_event.clear()
 
-class Model():
+class GenerateWaveformButtonModel(ButtonModel):
 
     """
-    The responsibility of the Model is to hold state information related to the application.
-    It should have no concept of what is going on in the outside world, relative to the
-    view and controller classes.
+    The responsibility of this class is to hold state information about the generate waveform button.
     """
 
     def __init__(self) -> None:
-
-        # Create models here
-        self.gen_button_model = ButtonSwitchModel()
+        super().__init__()
