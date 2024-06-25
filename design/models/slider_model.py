@@ -38,3 +38,30 @@ class AmplitudeSliderModel(SliderModel):
 
     def __init__(self) -> None:
         super().__init__()
+
+class HeightSliderModel(SliderModel):
+
+    """
+    The responsibility of this class is to hold the height slider information.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+
+class PhaseSliderModel(SliderModel):
+
+    """
+    The responsibility of this class is to hold the phase slider information.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+
+class FrequencySliderModel(SliderModel):
+
+    """
+    The responsibility of this class is to hold the frequency slider information.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
