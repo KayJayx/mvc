@@ -13,7 +13,7 @@ class SliderView():
         self.slider     = slider
         self.controller = None
 
-        # Set the callback for the button to be this classes method
+        # Set the callback for the slider to be this classes method
         self.slider.SetCallback(self.OnSlide)
 
     def AttachController(self, controller: sc.SliderController) -> None:
