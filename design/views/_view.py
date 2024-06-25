@@ -18,6 +18,9 @@ class View():
         self.gen_button_view        = bv.GenerateWaveformButtonView(self.designer.generate_waveform_button)
         self.resolution_slider_view = sv.ResolutionSliderView(self.designer.resolution_slider)
         self.amplitude_slider_view  = sv.AmplitudeSliderView(self.designer.amplitude_slider)
+        self.height_slider_view     = sv.HeightSliderView(self.designer.height_slider)
+        self.phase_slider_view      = sv.PhaseSliderView(self.designer.phase_slider)
+        self.frequency_slider_view  = sv.FrequencySliderView(self.designer.frequency_slider)
 
     @property
     def get_frequency(self) -> float:
