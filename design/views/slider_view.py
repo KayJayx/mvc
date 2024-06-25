@@ -40,10 +40,19 @@ class SliderView():
         """
         return self.slider.GetValue()
 
-class SampleSliderView(SliderView):
+class ResolutionSliderView(SliderView):
 
     """
     The view for the sample slider control
+    """
+
+    def __init__(self, slider: cc.Slider) -> None:
+        super().__init__(slider)
+
+class AmplitudeSliderView(SliderView):
+
+    """
+    The view for the amplitude slider control
     """
 
     def __init__(self, slider: cc.Slider) -> None:
