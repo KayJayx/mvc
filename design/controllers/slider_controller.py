@@ -18,23 +18,34 @@ class SliderController():
         """
         pass
 
-class SampleSliderController(SliderController):
+class ResolutionSliderController(SliderController):
 
     """
     The responsibility of this class is to primarily handle the sliding for the sample slider.
     """
 
-    def __init__(self, slider_model: sm.SampleSliderModel, view: _view.View) -> None:
+    def __init__(self, slider_model: sm.ResolutionSliderModel, view: _view.View) -> None:
         super().__init__(slider_model, view)
-        self.view.sample_slider_view.AttachController(controller=self)
+        self.view.resolution_slider_view.AttachController(controller=self)
 
     def OnSlide(self) -> None:
         """
         Handles the sliding of the sample slider
         """
+        pass
 
-        # Get the value from the view
-        samples = self.view.sample_slider_view.GetSliderValue()
+class AmplitudeSliderController(SliderController):
 
-        # Set the value within the model
-        self.slider_model.SetValue(samples)
+    """
+    The responsibility of this class is to primarily handle the sliding for the amplitude slider.
+    """
+
+    def __init__(self, slider_model: sm.AmplitudeSliderModel, view: _view.View) -> None:
+        super().__init__(slider_model, view)
+        self.view.amplitude_slider_view.AttachController(controller=self)
+
+    def OnSlide(self) -> None:
+        """
+        Handles the sliding of the amplitude slider
+        """
+        pass
