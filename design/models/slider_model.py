@@ -21,10 +21,19 @@ class SliderModel():
         """
         return self.value
     
-class SampleSliderModel(SliderModel):
+class ResolutionSliderModel(SliderModel):
 
     """
     The responsibility of this class is to hold the sample slider information.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+
+class AmplitudeSliderModel(SliderModel):
+
+    """
+    The responsibility of this class is to hold the amplitude slider information.
     """
 
     def __init__(self) -> None:
