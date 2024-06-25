@@ -57,3 +57,30 @@ class AmplitudeSliderView(SliderView):
 
     def __init__(self, slider: cc.Slider) -> None:
         super().__init__(slider)
+
+class HeightSliderView(SliderView):
+
+    """
+    The view for the height slider control
+    """
+
+    def __init__(self, slider: cc.Slider) -> None:
+        super().__init__(slider)
+
+class PhaseSliderView(SliderView):
+
+    """
+    The view for the phase slider control
+    """
+
+    def __init__(self, slider: cc.Slider) -> None:
+        super().__init__(slider)
+
+class FrequencySliderView(SliderView):
+
+    """
+    The view for the frequency slider control
+    """
+
+    def __init__(self, slider: cc.Slider) -> None:
+        super().__init__(slider)
