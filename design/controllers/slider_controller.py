@@ -49,3 +49,51 @@ class AmplitudeSliderController(SliderController):
         Handles the sliding of the amplitude slider
         """
         pass
+
+class HeightSliderController(SliderController):
+
+    """
+    The responsibility of this class is to primarily handle the sliding for the height slider.
+    """
+
+    def __init__(self, slider_model: sm.HeightSliderModel, view: _view.View) -> None:
+        super().__init__(slider_model, view)
+        self.view.height_slider_view.AttachController(controller=self)
+
+    def OnSlide(self) -> None:
+        """
+        Handles the sliding of the height slider
+        """
+        pass
+
+class PhaseSliderController(SliderController):
+
+    """
+    The responsibility of this class is to primarily handle the sliding for the phase slider.
+    """
+
+    def __init__(self, slider_model: sm.PhaseSliderModel, view: _view.View) -> None:
+        super().__init__(slider_model, view)
+        self.view.phase_slider_view.AttachController(controller=self)
+
+    def OnSlide(self) -> None:
+        """
+        Handles the sliding of the phase slider
+        """
+        pass
+
+class FrequencySliderController(SliderController):
+
+    """
+    The responsibility of this class is to primarily handle the sliding for the frequency slider.
+    """
+
+    def __init__(self, slider_model: sm.FrequencySliderModel, view: _view.View) -> None:
+        super().__init__(slider_model, view)
+        self.view.frequency_slider_view.AttachController(controller=self)
+
+    def OnSlide(self) -> None:
+        """
+        Handles the sliding of the frequency slider
+        """
+        pass
