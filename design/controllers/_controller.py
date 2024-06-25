@@ -27,6 +27,7 @@ class Controller():
         self.amplitude_slider_model  = sm.AmplitudeSliderModel()
         self.height_slider_model     = sm.HeightSliderModel()
         self.phase_slider_model      = sm.PhaseSliderModel()
+        self.frequency_slider_model  = sm.FrequencySliderModel()
 
         # Create controllers here
         self.gen_button_controller        = bc.GenerateWaveformButtonController(self.gen_button_model, self.view)
@@ -34,6 +35,7 @@ class Controller():
         self.amplitude_slider_controller  = sc.AmplitudeSliderController(self.amplitude_slider_model, self.view)
         self.height_slider_controller     = sc.HeightSliderController(self.height_slider_model, self.view)
         self.phase_slider_controller      = sc.PhaseSliderController(self.phase_slider_model, self.view)
+        self.frequency_slider_controller  = sc.FrequencySliderController(self.frequency_slider_model, self.view)
 
         # Run the designer to actually display the info to the screen
         self.view.designer.Run()
