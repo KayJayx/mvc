@@ -29,3 +29,21 @@ class LabelView():
         Get the label
         """
         return self.label.GetValue()
+    
+class AngularLabelView(LabelView):
+
+    """
+    The view for the angular label control
+    """
+
+    def __init__(self, label: cc.Label) -> None:
+        super().__init__(label)
+
+class PeriodLabelView(LabelView):
+
+    """
+    The view for the period label control
+    """
+
+    def __init__(self, label: cc.Label) -> None:
+        super().__init__(label)
