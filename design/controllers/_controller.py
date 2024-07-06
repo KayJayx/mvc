@@ -4,6 +4,10 @@ import design.controllers.button_controller as bc
 import design.models.button_model as bm
 import design.controllers.slider_controller as sc
 import design.models.slider_model as sm
+import design.controllers.label_controller as lc
+import design.models.label_model as lm
+import design.controllers.checkbox_controller as cbc
+import design.models.checkbox_model as cm
 
 class Controller():
 
@@ -23,19 +27,29 @@ class Controller():
 
         # Create models here
         self.gen_button_model        = bm.GenerateWaveformButtonModel()
+        self.stop_button_model       = bm.StopWaveformButtonModel()
+        self.clear_button_model      = bm.ClearWaveformButtonModel()
         self.resolution_slider_model = sm.ResolutionSliderModel()
         self.amplitude_slider_model  = sm.AmplitudeSliderModel()
         self.height_slider_model     = sm.HeightSliderModel()
         self.phase_slider_model      = sm.PhaseSliderModel()
         self.frequency_slider_model  = sm.FrequencySliderModel()
+        self.angular_label_model     = lm.AngularLabelModel()
+        self.period_label_model      = lm.PeriodLabelModel()
+        self.norm_checkbox_model     = cm.NormalizeCheckboxModel()
 
         # Create controllers here
         self.gen_button_controller        = bc.GenerateWaveformButtonController(self.gen_button_model, self.view)
+        self.stop_button_controller       = bc.StopWaveformButtonController(self.stop_button_model, self.view)
+        self.clear_button_controller      = bc.ClearWaveformButtonController(self.clear_button_model, self.view)
         self.resolution_slider_controller = sc.ResolutionSliderController(self.resolution_slider_model, self.view)
         self.amplitude_slider_controller  = sc.AmplitudeSliderController(self.amplitude_slider_model, self.view)
         self.height_slider_controller     = sc.HeightSliderController(self.height_slider_model, self.view)
         self.phase_slider_controller      = sc.PhaseSliderController(self.phase_slider_model, self.view)
         self.frequency_slider_controller  = sc.FrequencySliderController(self.frequency_slider_model, self.view)
+        self.angular_label_controller     = lc.AngularLabelController(self.angular_label_model, self.view)
+        self.period_label_controller      = lc.PeriodLabelController(self.period_label_model, self.view)
+        self.norm_checkbox_controller     = cbc.NormalizeCheckboxController(self.norm_checkbox_model, self.view)
 
         # Run the designer to actually display the info to the screen
         self.view.designer.Run()
