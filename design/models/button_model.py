@@ -36,3 +36,21 @@ class GenerateWaveformButtonModel(ButtonModel):
 
     def __init__(self) -> None:
         super().__init__()
+
+class StopWaveformButtonModel(ButtonModel):
+
+    """
+    The responsibility of this class is to hold state information about the stop waveform button.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+
+class ClearWaveformButtonModel(ButtonModel):
+
+    """
+    The responsibility of this class is to hold state information about the clear waveform button.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
