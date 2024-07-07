@@ -8,6 +8,8 @@ import design.controllers.label_controller as lc
 import design.models.label_model as lm
 import design.controllers.checkbox_controller as cbc
 import design.models.checkbox_model as cm
+import design.controllers.plot_controller as pc
+import design.models.plot_model as pm
 
 class Controller():
 
@@ -37,6 +39,7 @@ class Controller():
         self.angular_label_model     = lm.AngularLabelModel()
         self.period_label_model      = lm.PeriodLabelModel()
         self.norm_checkbox_model     = cm.NormalizeCheckboxModel()
+        self.time_plot_model         = pm.TimePlotModel()
 
         # Create controllers here
         self.gen_button_controller        = bc.GenerateWaveformButtonController(self.gen_button_model, self.view)
@@ -50,6 +53,7 @@ class Controller():
         self.angular_label_controller     = lc.AngularLabelController(self.angular_label_model, self.view)
         self.period_label_controller      = lc.PeriodLabelController(self.period_label_model, self.view)
         self.norm_checkbox_controller     = cbc.NormalizeCheckboxController(self.norm_checkbox_model, self.view)
+        self.time_plot_controller         = pc.TimePlotController(self.time_plot_model, self.view)
 
         # Run the designer to actually display the info to the screen
         self.view.designer.Run()
