@@ -4,6 +4,7 @@ import design.views.button_view as bv
 import design.views.slider_view as sv
 import design.views.label_view as lv
 import design.views.checkbox_view as cv
+import design.views.plot_view as pv
 import typing
 
 class View():
@@ -28,6 +29,7 @@ class View():
         self.angular_label_view     = lv.AngularLabelView(self.designer.angular_label)
         self.period_label_view      = lv.PeriodLabelView(self.designer.period_label)
         self.norm_checkbox_view     = cv.NormalizeCheckboxView(self.designer.normalize_freq)
+        self.time_plot_view         = pv.TimePlotView(self.designer.time_plot)
 
     @property
     def get_frequency(self) -> float:
