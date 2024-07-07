@@ -1,0 +1,40 @@
+from design.views._designer import cc
+import design.controllers.plot_controller as pc
+
+class PlotView():
+
+    """
+    The responsibility of this class is to take in a plot control, tie the control
+    with a controller or listener and forward info to the controller or listener.
+    """
+
+    def __init__(self, plot: cc.Plot) -> None:
+        self.plot       = plot
+        self.controller = None
+
+    def AttachController(self, controller: pc.PlotController) -> None:
+        """
+        Attach a listener controller to the view
+        """
+        self.controller = controller
+
+    def SetPlotData(self) -> None:
+        """
+        Set the plot data
+        """
+        pass
+
+    def GetPlotData(self) -> str:
+        """
+        Get the plot data
+        """
+        pass
+
+class TimePlotView(PlotView):
+
+    """
+    The view for the time plot control
+    """
+
+    def __init__(self, plot: cc.Plot) -> None:
+        super().__init__(plot)
