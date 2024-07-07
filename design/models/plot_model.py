@@ -29,3 +29,12 @@ class TimePlotModel(PlotModel):
 
     def __init__(self) -> None:
         super().__init__()
+
+class FrequencyPlotModel(PlotModel):
+
+    """
+    The responsibility of this class is to hold the frequency plot information.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()

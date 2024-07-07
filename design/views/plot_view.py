@@ -38,3 +38,12 @@ class TimePlotView(PlotView):
 
     def __init__(self, plot: cc.Plot) -> None:
         super().__init__(plot)
+
+class FrequencyPlotView(PlotView):
+
+    """
+    The view for the frequency plot control
+    """
+
+    def __init__(self, plot: cc.Plot) -> None:
+        super().__init__(plot)

@@ -40,6 +40,7 @@ class Controller():
         self.period_label_model      = lm.PeriodLabelModel()
         self.norm_checkbox_model     = cm.NormalizeCheckboxModel()
         self.time_plot_model         = pm.TimePlotModel()
+        self.frequency_plot_model    = pm.FrequencyPlotModel()
 
         # Create controllers here
         self.gen_button_controller        = bc.GenerateWaveformButtonController(self.gen_button_model, self.view)
@@ -54,6 +55,7 @@ class Controller():
         self.period_label_controller      = lc.PeriodLabelController(self.period_label_model, self.view)
         self.norm_checkbox_controller     = cbc.NormalizeCheckboxController(self.norm_checkbox_model, self.view)
         self.time_plot_controller         = pc.TimePlotController(self.time_plot_model, self.view)
+        self.frequency_plot_controller    = pc.FrequencyPlotController(self.frequency_plot_model, self.view)
 
         # Run the designer to actually display the info to the screen
         self.view.designer.Run()

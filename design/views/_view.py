@@ -30,6 +30,7 @@ class View():
         self.period_label_view      = lv.PeriodLabelView(self.designer.period_label)
         self.norm_checkbox_view     = cv.NormalizeCheckboxView(self.designer.normalize_freq)
         self.time_plot_view         = pv.TimePlotView(self.designer.time_plot)
+        self.frequency_plot_view    = pv.FrequencyPlotView(self.designer.freq_plot)
 
     @property
     def get_frequency(self) -> float:

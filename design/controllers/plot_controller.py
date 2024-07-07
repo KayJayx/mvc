@@ -26,3 +26,12 @@ class TimePlotController(PlotController):
 
     def __init__(self, plot_model: pm.TimePlotModel, view: _view.View) -> None:
         super().__init__(plot_model, view)
+
+class FrequencyPlotController(PlotController):
+
+    """
+    The responsibility of this class is to primarily handle the updating of the frequency plot.
+    """
+
+    def __init__(self, plot_model: pm.FrequencyPlotModel, view: _view.View) -> None:
+        super().__init__(plot_model, view)
