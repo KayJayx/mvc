@@ -1,4 +1,5 @@
 import typing
+import threading
 
 class SliderModel():
 
@@ -8,18 +9,21 @@ class SliderModel():
 
     def __init__(self) -> None:
         self.value = None
+        self.lock  = threading.Lock()
 
     def SetValue(self, value: typing.Any) -> None:
         """
         Set the value of the slider
         """
-        self.value = value
+        with self.lock:
+            self.value = value
 
     def GetValue(self) -> typing.Any:
         """
         Get the value of the slider
         """
-        return self.value
+        with self.lock:
+            return self.value
     
 class ResolutionSliderModel(SliderModel):
 
