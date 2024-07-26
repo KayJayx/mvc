@@ -33,8 +33,6 @@ class GenerateWaveformButtonController(ButtonController):
         """
         Handles the button click for the generate waveform button
         """
-
-        # By updating the model we can signal the main thread to update the plot
         self.button_model.SetClickEvent()
 
 class StopWaveformButtonController(ButtonController):
@@ -52,7 +50,7 @@ class StopWaveformButtonController(ButtonController):
         """
         Handles the button click for the stop waveform button
         """
-        pass
+        self.button_model.SetClickEvent()
 
 class ClearWaveformButtonController(ButtonController):
 
@@ -69,4 +67,4 @@ class ClearWaveformButtonController(ButtonController):
         """
         Handles the button click for the clear waveform button
         """
-        pass
+        self.button_model.SetClickEvent()
