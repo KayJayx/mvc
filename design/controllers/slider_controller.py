@@ -28,11 +28,14 @@ class ResolutionSliderController(SliderController):
         super().__init__(slider_model, view)
         self.view.resolution_slider_view.AttachController(controller=self)
 
+        # Initialize the model with a value
+        self.slider_model.SetValue(self.view.resolution_slider_view.GetSliderValue())
+
     def OnSlide(self) -> None:
         """
         Handles the sliding of the sample slider
         """
-        pass
+        self.slider_model.SetValue(self.view.resolution_slider_view.GetSliderValue())
 
 class AmplitudeSliderController(SliderController):
 
@@ -44,11 +47,14 @@ class AmplitudeSliderController(SliderController):
         super().__init__(slider_model, view)
         self.view.amplitude_slider_view.AttachController(controller=self)
 
+        # Initialize the model with a value
+        self.slider_model.SetValue(self.view.amplitude_slider_view.GetSliderValue())
+
     def OnSlide(self) -> None:
         """
         Handles the sliding of the amplitude slider
         """
-        pass
+        self.slider_model.SetValue(self.view.amplitude_slider_view.GetSliderValue())
 
 class HeightSliderController(SliderController):
 
@@ -60,11 +66,14 @@ class HeightSliderController(SliderController):
         super().__init__(slider_model, view)
         self.view.height_slider_view.AttachController(controller=self)
 
+        # Initialize the model with a value
+        self.slider_model.SetValue(self.view.height_slider_view.GetSliderValue())
+
     def OnSlide(self) -> None:
         """
         Handles the sliding of the height slider
         """
-        pass
+        self.slider_model.SetValue(self.view.height_slider_view.GetSliderValue())
 
 class PhaseSliderController(SliderController):
 
@@ -76,11 +85,14 @@ class PhaseSliderController(SliderController):
         super().__init__(slider_model, view)
         self.view.phase_slider_view.AttachController(controller=self)
 
+        # Initialize the model with a value
+        self.slider_model.SetValue(self.view.phase_slider_view.GetSliderValue())
+
     def OnSlide(self) -> None:
         """
         Handles the sliding of the phase slider
         """
-        pass
+        self.slider_model.SetValue(self.view.phase_slider_view.GetSliderValue())
 
 class FrequencySliderController(SliderController):
 
@@ -92,8 +104,11 @@ class FrequencySliderController(SliderController):
         super().__init__(slider_model, view)
         self.view.frequency_slider_view.AttachController(controller=self)
 
+        # Initialize the model with a value
+        self.slider_model.SetValue(self.view.frequency_slider_view.GetSliderValue())
+
     def OnSlide(self) -> None:
         """
         Handles the sliding of the frequency slider
         """
-        pass
+        self.slider_model.SetValue(self.view.frequency_slider_view.GetSliderValue())
