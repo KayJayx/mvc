@@ -151,7 +151,7 @@ class Designer():
             min_height=self.screen_height
         )
 
-    def Run(self, callback: typing.Any = None, user_data: typing.Any = None) -> None:
+    def Run(self, callback: typing.Any = None) -> None:
         """
         Run the main loop for rendering.
         """
@@ -166,10 +166,7 @@ class Designer():
 
             # Call a user defined function here
             if callback is not None:
-                if user_data is not None:
-                    callback(user_data)
-                else:
-                    callback()
+                callback()
 
             # Render the GUI frame
             cc.dpg.render_dearpygui_frame()
