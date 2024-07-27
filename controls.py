@@ -666,7 +666,6 @@ class Plot(Control):
     """
 
     def __init__(self, label: str = None, width: int = 0, height: int = 0, pos: 'list[int]' = [],
-                 one_plot_at_a_time: bool = False, override_plot_on_entry: bool = False,
                  parent: Control = None, callback: typing.Any = None, 
                  drag_callback: typing.Any = None, drop_callback: typing.Any = None, 
                  user_data: typing.Any = None, payload_type: str = '$$DPG_PAYLOAD', no_title: bool = False,
