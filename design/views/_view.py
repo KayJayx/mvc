@@ -5,7 +5,6 @@ import design.views.slider_view as sv
 import design.views.label_view as lv
 import design.views.checkbox_view as cv
 import design.views.plot_view as pv
-import typing
 
 class View():
 
@@ -31,60 +30,3 @@ class View():
         self.norm_checkbox_view     = cv.NormalizeCheckboxView(self.designer.normalize_freq)
         self.time_plot_view         = pv.TimePlotView(self.designer.time_plot)
         self.frequency_plot_view    = pv.FrequencyPlotView(self.designer.freq_plot)
-
-    @property
-    def get_frequency(self) -> float:
-        """
-        Gets the frequency from the slider
-        """
-        return self.designer.frequency_slider.GetValue()
-    
-    @property
-    def set_angular_frequency(self, angular_frequency: float) -> None:
-        """
-        Sets the angular frequency to the label
-        """
-        self.designer.angular_label.SetValue(f"Angular Freq: {'{:.3f}'.format(angular_frequency)}")
-
-    @property
-    def set_period(self, period: float) -> None:
-        """
-        Sets the period to the label
-        """
-        self.designer.period_label.SetValue(f"Period: {'{:.3f}'.format(period)}")
-
-    @staticmethod
-    def GenerateWaveFormButtonCallback(sender: typing.Any, app: typing.Any, user: typing.Any) -> None:
-        """
-        The callback function that gets called when the button is pushed
-        """
-        pass
-
-    @staticmethod
-    def StopWaveFormButtonCallback(sender: typing.Any, app: typing.Any, user: typing.Any) -> None:
-        """
-        The callback function that gets called when the button is pushed
-        """
-        pass
-
-    @staticmethod
-    def ClearPlotsButtonCallback(sender: typing.Any, app: typing.Any, user: typing.Any) -> None:
-        """
-        The callback function that gets called when the button is pushed
-        """
-        pass
-
-    @staticmethod
-    def FrequencySliderCallback(sender: typing.Any, app: typing.Any, user: typing.Any) -> None:
-        """
-        The callback function that gets called when the slider is moved
-        """
-        pass
-        """
-        self.frequency_slider.SetSliderCallback(
-            callback=lambda sender, app, user : (
-                self.angular_label.SetLabel(f"Angular Freq: {'{:.3f}'.format(2 * np.pi * self.frequency_slider.GetSliderValue())}"),
-                self.period_label.SetLabel(f"Period: {'{:.3f}'.format(1 / self.frequency_slider.GetSliderValue())}")
-            )
-        )
-        """
