@@ -16,7 +16,7 @@ class ButtonController():
         """
         For when the user clicks the button
         """
-        pass
+        self.button_model.SetClickEvent()
 
 class GenerateWaveformButtonController(ButtonController):
 
@@ -29,12 +29,6 @@ class GenerateWaveformButtonController(ButtonController):
         super().__init__(button_model, view)
         self.view.gen_button_view.AttachController(controller=self)
 
-    def OnButtonClick(self) -> None:
-        """
-        Handles the button click for the generate waveform button
-        """
-        self.button_model.SetClickEvent()
-
 class ClearWaveformButtonController(ButtonController):
 
     """
@@ -45,9 +39,3 @@ class ClearWaveformButtonController(ButtonController):
     def __init__(self, button_model: bm.ClearWaveformButtonModel, view: _view.View) -> None:
         super().__init__(button_model, view)
         self.view.clear_button_view.AttachController(controller=self)
-
-    def OnButtonClick(self) -> None:
-        """
-        Handles the button click for the clear waveform button
-        """
-        self.button_model.SetClickEvent()
