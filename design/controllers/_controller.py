@@ -64,7 +64,7 @@ class Controller():
         The purpose of this function is to update the waveform plot onto the main window
         """
 
-        if self.gen_button_model.WasClicked():
+        if self.gen_button_controller.button_model.WasClicked():
             
             # Get all of the needed information needed to update the plot
             samples   = self.resolution_slider_controller.slider_model.GetValue()
@@ -74,7 +74,7 @@ class Controller():
             phase     = self.phase_slider_controller.slider_model.GetValue()
             frequency = self.frequency_slider_controller.slider_model.GetValue()
 
-            if self.norm_checkbox_model.IsChecked():
+            if self.norm_checkbox_controller.checkbox_model.IsChecked():
                 y_data = [(amplitude * np.sin(((2 * np.pi * frequency * x) / samples) + phase)) + height for x in x_data]
             else:
                 # Digital representation of what would be an analog signal, where samples represents the
