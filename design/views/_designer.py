@@ -54,35 +54,33 @@ class Designer():
         x_label = "Time"
         y_label = "Amplitude"
         self.time_plot = cc.Plot(
+            x_label=x_label, y_label=y_label,
             label=f"{y_label} vs. {x_label}",
             width=self.plot_window_width,
             height=int(self.plot_window_height / 2),
             parent=self.plot_window,
             pos=[0, 0]
         )
-        self.time_plot.AddPlot(x_label=x_label, y_label=y_label)
         self.time_plot.SwitchThemeComponent(theme_component=self.time_plot.line_theme_component)
         self.time_plot.SetPlotLineColor(color=[36, 183, 199])
         self.time_plot.BindTheme()
-        self.time_plot.SetAxisLimits(self.time_plot.x_axis, 0, self.length_of_plot)
-        self.time_plot.SetAxisLimits(self.time_plot.y_axis, -5, 5)
-        self.time_line_series = cc.dpg.add_line_series(x=[0], y=[0], parent=self.time_plot.x_axis)
+        self.time_plot.SetXAxisLimits(0, self.length_of_plot)
+        self.time_plot.SetYAxisLimits(-5, 5)
 
         # Create a frequency-domain plot and add it to the window
         x_label = "Frequency"
         y_label = "Intensity"
         self.freq_plot = cc.Plot(
+            x_label=x_label, y_label=y_label,
             label=f"{y_label} vs. {x_label}",
             width=self.plot_window_width,
             height=int(self.plot_window_height / 2),
             parent=self.plot_window,
             pos=[0, self.time_plot.GetPosition()[1] + self.time_plot.GetHeight()]
         )
-        self.freq_plot.AddPlot(x_label=x_label, y_label=y_label)
         self.freq_plot.SwitchThemeComponent(theme_component=self.freq_plot.line_theme_component)
         self.freq_plot.SetPlotLineColor(color=[36, 183, 199])
         self.freq_plot.BindTheme()
-        self.freq_line_series = cc.dpg.add_line_series(x=[0], y=[0], parent=self.freq_plot.x_axis)
 
         # Create a window for the controls
         self.control_window_width  = self.screen_width - self.plot_window_width if os.name == "posix" else self.screen_width - self.plot_window_width - 16
