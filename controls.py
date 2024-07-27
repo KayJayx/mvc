@@ -732,14 +732,17 @@ class Plot(Control):
         self.x_axis = dpg.add_plot_axis(dpg.mvXAxis, label=x_label, time=x_time, parent=self.tag, lock_max=x_lock_max, lock_min=x_lock_min, no_gridlines=x_no_gridlines)
         self.y_axis = dpg.add_plot_axis(dpg.mvYAxis, label=y_label, time=y_time, parent=self.tag, lock_max=y_lock_max, lock_min=y_lock_min, no_gridlines=y_no_gridlines)
 
-        self.line_series   = dpg.add_line_series(x=[], y=[], parent=self.x_axis)
-        self.candle_series = dpg.add_candle_series(dates=[], opens=[], closes=[], lows=[], highs=[], parent=self.y_axis)
+        self.plot_series = None
 
     def PlotLineSeriesData(self, x_data: list, y_data: list) -> Plot:
         """
         Configure the line series plot
         """
-        dpg.configure_item(self.line_series, x=x_data, y=y_data)
+        
+        if self.plot_series is not None:
+            dpg.delete_item(self.plot_series)
+
+        self.plot_series = dpg.add_line_series(x=x_data, y=y_data, parent=self.x_axis)
 
         return self
     
@@ -747,7 +750,10 @@ class Plot(Control):
         """
         Configure the candle series plot
         """
-        dpg.configure_item(self.candle_series, dates=dates, opens=opens, closes=closes, lows=lows, highs=highs)
+        if self.plot_series is not None:
+            dpg.delete_item(self.plot_series)
+
+        self.plot_series = dpg.add_candle_series(dates=dates, opens=opens, closes=closes, lows=lows, highs=highs, parent=self.y_axis)
 
         return self
     
@@ -771,7 +777,7 @@ class Plot(Control):
         """
         Set x axis limits
         """
-        dpg.set_axis_limits(axis=self.x_axis, xmin=min, xmax=max)
+        dpg.set_axis_limits(axis=self.x_axis, ymin=min, ymax=max)
 
         return self
     
@@ -779,7 +785,7 @@ class Plot(Control):
         """
         Set x axis limits
         """
-        dpg.set_axis_limits(axis=self.y_axis, xmin=min, xmax=max)
+        dpg.set_axis_limits(axis=self.y_axis, ymin=min, ymax=max)
 
         return self
 
