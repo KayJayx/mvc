@@ -19,13 +19,6 @@ class PlotModel():
             self.x_data = x_data
             self.y_data = y_data
 
-    def GetPlotData(self) -> tuple[list, list]:
-        """
-        Get the plot data
-        """
-        with self.lock:
-            return self.x_data, self.y_data
-
 class TimePlotModel(PlotModel):
 
     """
