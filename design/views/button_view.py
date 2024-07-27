@@ -36,15 +36,6 @@ class GenerateWaveformButtonView(ButtonView):
     def __init__(self, button: cc.Button) -> None:
         super().__init__(button)
 
-class StopWaveformButtonView(ButtonView):
-
-    """
-    The view for the stop waveform button control
-    """
-
-    def __init__(self, button: cc.Button) -> None:
-        super().__init__(button)
-
 class ClearWaveformButtonView(ButtonView):
 
     """

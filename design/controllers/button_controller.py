@@ -35,23 +35,6 @@ class GenerateWaveformButtonController(ButtonController):
         """
         self.button_model.SetClickEvent()
 
-class StopWaveformButtonController(ButtonController):
-
-    """
-    The responsibility of this class is to primarily handle the button presses for the stop
-    waveform button.
-    """
-
-    def __init__(self, button_model: bm.StopWaveformButtonModel, view: _view.View) -> None:
-        super().__init__(button_model, view)
-        self.view.stop_button_view.AttachController(controller=self)
-
-    def OnButtonClick(self) -> None:
-        """
-        Handles the button click for the stop waveform button
-        """
-        self.button_model.SetClickEvent()
-
 class ClearWaveformButtonController(ButtonController):
 
     """

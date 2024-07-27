@@ -110,17 +110,11 @@ class Designer():
             parent=self.group2,
             pos=[20, 50]
         )
-        self.stop_waveform_button = cc.Button(
-            label="Stop Waveform Generation",
-            width=180, height=30,
-            parent=self.group2,
-            pos=[self.generate_waveform_button.GetPosition()[0] + self.generate_waveform_button.GetWidth() + 20, self.generate_waveform_button.GetPosition()[1]]
-        )
         self.clear_plot_button = cc.Button(
             label="Clear Plots",
             width=140, height=30,
             parent=self.group2,
-            pos=[self.stop_waveform_button.GetPosition()[0] + self.stop_waveform_button.GetWidth() + 20, self.stop_waveform_button.GetPosition()[1]]
+            pos=[self.generate_waveform_button.GetPosition()[0] + self.generate_waveform_button.GetWidth() + 20, self.generate_waveform_button.GetPosition()[1]]
         )
 
         # Create sliders to change the waveform
