@@ -32,4 +32,7 @@ class NormalizeCheckboxController(CheckboxController):
         """
         For when the user checks the normalize checkbox
         """
-        self.checkbox_model.SetCheckEvent()
+        if self.checkbox_model.IsChecked():
+            self.checkbox_model.ClearCheckEvent()
+        else:
+            self.checkbox_model.SetCheckEvent()
