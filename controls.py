@@ -684,8 +684,6 @@ class Plot(Control):
                  horizontal_mod: int = dpg.internal_dpg.mvKey_Alt,
                  vertical_mod: int = dpg.internal_dpg.mvKey_Shift) -> None:
         super().__init__(parent=parent)
-        self.one_plot_at_a_time     = one_plot_at_a_time        # TODO: No state variables here
-        self.override_plot_on_entry = override_plot_on_entry    # TODO: No state variables here
         self.candle_theme_component = dpg.add_theme_component(dpg.mvCandleSeries, parent=self.theme)
         self.line_theme_component   = dpg.add_theme_component(dpg.mvLineSeries, parent=self.theme)
         self.tag                    = dpg.add_plot(
@@ -725,22 +723,6 @@ class Plot(Control):
             horizontal_mod=horizontal_mod,
             vertical_mod=vertical_mod
         )
-        self.granularity   = {
-            "1m"  : dpg.mvTimeUnit_Min,
-            "2m"  : dpg.mvTimeUnit_Min,
-            "5m"  : dpg.mvTimeUnit_Min,
-            "15m" : dpg.mvTimeUnit_Min,
-            "30m" : dpg.mvTimeUnit_Min,
-            "60m" : dpg.mvTimeUnit_Hr,
-            "90m" : dpg.mvTimeUnit_Hr,
-            "1h"  : dpg.mvTimeUnit_Hr,
-            "1d"  : dpg.mvTimeUnit_Day,
-            "5d"  : dpg.mvTimeUnit_Day,
-            "1wk" : dpg.mvTimeUnit_Day,
-            "1mo" : dpg.mvTimeUnit_Mo,
-            "3mo" : dpg.mvTimeUnit_Mo
-        }
-        self.no_children_onetime_only = True    # TODO: No state variables here
 
     def AddPlot(self, x_label: str, y_label: str, add_legend: bool = False, x_time: bool = False, y_time: bool = False, 
                 x_lock_min: bool = False, x_lock_max: bool = False, y_lock_min: bool = False, y_lock_max: bool = False,
@@ -772,151 +754,6 @@ class Plot(Control):
         dpg.set_axis_limits(axis=axis, ymin=min, ymax=max)
 
         return self
-    
-    # TODO: Move this outside of the controls file
-    def CandleStickPlotDrop(self, sender: typing.Any, app_data: typing.Any, user_data: typing.Any) -> None:
-        """
-        Adds a candle stick plot to the plotting area, must be passed in as a drop callback
-        """
-
-        # Lets define the app_data[8] as the source of the drag and drop
-        source_control: Control = app_data[8]
-
-        # If the override plot flag is set, we want to disable the one plot at a time flag
-        if self.override_plot_on_entry:
-            self.one_plot_at_a_time = False
-
-            # Also destroy the previous plot such as to override it with a new one
-            plot_children = dpg.get_item_children(self.y_axis)[1]
-
-            for previous_plot in plot_children:
-                dpg.delete_item(previous_plot)
-
-            # Also destroy the previous plot such as to override it with a new one
-            plot_children = dpg.get_item_children(self.x_axis)[1]
-
-            for previous_plot in plot_children:
-                dpg.delete_item(previous_plot)
-
-        # If we have the one plot at a time flag enabled, then check to see if the drag source is
-        # still active and if it is just return as we dont want to plot again
-        if self.one_plot_at_a_time:
-            if not source_control.IsEnabled():
-                return
-
-        # Lets define the 3 inputs from the app_data
-        timestamps   = app_data[0]
-        opens        = app_data[1]
-        closes       = app_data[2]
-        lows         = app_data[3]
-        highs        = app_data[4]
-        legend_label = app_data[5]    # Legend label
-        autofit      = app_data[6]
-        granularity  = app_data[7]
-        candle_stick = dpg.add_candle_series(
-            dates=timestamps,
-            opens=opens,
-            closes=closes,
-            lows=lows,
-            highs=highs,
-            label=legend_label,
-            parent=self.y_axis,
-            time_unit=self.granularity[granularity]
-        )
-
-        # Autofit the plot
-        if autofit or self.no_children_onetime_only:
-            dpg.fit_axis_data(self.x_axis)
-            dpg.fit_axis_data(self.y_axis)
-            self.no_children_onetime_only = False
-
-        # Add a button when you right click on the legend item to delete the entry
-        if self.one_plot_at_a_time:
-            callback = lambda sender, app, user: (dpg.delete_item(user), source_control.Enable())
-        else:
-            callback = lambda sender, app, user: dpg.delete_item(user)
-
-        candle_stick_control     = Control(parent=None)
-        candle_stick_control.tag = candle_stick
-
-        delete_button: Button = Button(
-            label="Delete Plot",
-            width=70,
-            height=25,
-            parent=candle_stick_control,
-            callback=callback,
-            user_data=candle_stick_control.tag
-        )
-        delete_button.BindTheme()
-
-        if self.one_plot_at_a_time:
-            source_control.Disable()
-
-    # TODO: Move this outside of the controls file
-    def LineSeriesPlotDrop(self, sender: typing.Any, app_data: typing.Any, user_data: typing.Any) -> None:
-        """
-        Adds a line series plot to the plotting area, must be passed in as the drop callback
-        """
-
-        # Lets define the app_data[4] as the source of the drag and drop
-        source_control: Control = app_data[4]
-
-        # If the override plot flag is set, we want to disable the one plot at a time flag
-        if self.override_plot_on_entry:
-            self.one_plot_at_a_time = False
-
-            # Also destroy the previous plot such as to override it with a new one
-            plot_children = dpg.get_item_children(self.y_axis)[1]
-
-            for previous_plot in plot_children:
-                dpg.delete_item(previous_plot)
-
-            # Also destroy the previous plot such as to override it with a new one
-            plot_children = dpg.get_item_children(self.x_axis)[1]
-
-            for previous_plot in plot_children:
-                dpg.delete_item(previous_plot)
-
-        # If we have the one plot at a time flag enabled, then check to see if the drag source is
-        # still active and if it is just return as we dont want to plot again
-        if self.one_plot_at_a_time:
-            if not source_control.IsEnabled():
-                return
-
-        # Lets define the 3 inputs from the app_data
-        x_data       = app_data[0]
-        y_data       = app_data[1]
-        legend_label = app_data[2]    # Legend label
-        autofit      = app_data[3]
-        line_series  = dpg.add_line_series(x_data, y_data, label=legend_label, parent=self.x_axis)
-
-        # Autofit the plot
-        if autofit or self.no_children_onetime_only:
-            dpg.fit_axis_data(self.x_axis)
-            dpg.fit_axis_data(self.y_axis)
-            self.no_children_onetime_only = False
-
-        # Add a button when you right click on the legend item to delete the entry
-        if self.one_plot_at_a_time:
-            callback = lambda sender, app, user: (dpg.delete_item(user), source_control.Enable())
-        else:
-            callback = lambda sender, app, user: dpg.delete_item(user)
-
-        line_series_control     = Control(parent=None)
-        line_series_control.tag = line_series
-
-        delete_button: Button = Button(
-            label="Delete Plot",
-            width=70,
-            height=25,
-            parent=line_series_control,
-            callback=callback,
-            user_data=line_series_control.tag
-        )
-        delete_button.BindTheme()
-
-        if self.one_plot_at_a_time:
-            source_control.Disable()
 
     def SwitchThemeComponent(self, theme_component: typing.Any) -> Plot:
         """
