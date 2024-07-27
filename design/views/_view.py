@@ -18,7 +18,6 @@ class View():
         super().__init__()
         self.designer               = Designer()
         self.gen_button_view        = bv.GenerateWaveformButtonView(self.designer.generate_waveform_button)
-        self.stop_button_view       = bv.StopWaveformButtonView(self.designer.stop_waveform_button)
         self.clear_button_view      = bv.ClearWaveformButtonView(self.designer.clear_plot_button)
         self.resolution_slider_view = sv.ResolutionSliderView(self.designer.resolution_slider)
         self.amplitude_slider_view  = sv.AmplitudeSliderView(self.designer.amplitude_slider)
