@@ -16,7 +16,10 @@ class CheckboxController():
         """
         For when the user checks the checkbox
         """
-        pass
+        if self.checkbox_model.IsChecked():
+            self.checkbox_model.ClearCheckEvent()
+        else:
+            self.checkbox_model.SetCheckEvent()
 
 class NormalizeCheckboxController(CheckboxController):
 
@@ -27,12 +30,3 @@ class NormalizeCheckboxController(CheckboxController):
     def __init__(self, checkbox_model: cm.NormalizeCheckboxModel, view: _view.View) -> None:
         super().__init__(checkbox_model, view)
         self.view.norm_checkbox_view.AttachController(controller=self)
-
-    def OnCheck(self) -> None:
-        """
-        For when the user checks the normalize checkbox
-        """
-        if self.checkbox_model.IsChecked():
-            self.checkbox_model.ClearCheckEvent()
-        else:
-            self.checkbox_model.SetCheckEvent()
