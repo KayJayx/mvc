@@ -18,17 +18,20 @@ class PlotView():
         """
         self.controller = controller
 
-    def SetPlotData(self) -> None:
+    def SetPlotData(self, x_data: list, y_data: list) -> None:
         """
         Set the plot data
         """
-        pass
+        self.plot.PlotLineSeriesData(x_data=x_data, y_data=y_data)
 
-    def GetPlotData(self) -> str:
+    def GetPlotData(self) -> tuple[list, list]:
         """
         Get the plot data
         """
-        pass
+        self.plot.GetValue()
+
+        # TODO: Not sure what gets returned here yet...
+        return
 
 class TimePlotView(PlotView):
 

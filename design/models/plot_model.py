@@ -1,4 +1,4 @@
-import typing
+import threading
 
 class PlotModel():
 
@@ -7,19 +7,24 @@ class PlotModel():
     """
 
     def __init__(self) -> None:
-        self.plot_data = None
+        self.x_data = None
+        self.y_data = None
+        self.lock   = threading.Lock()
 
-    def SetPlotData(self, plot_data: typing.Any) -> None:
+    def SetPlotData(self, x_data: list, y_data: list) -> None:
         """
         Set the plot data
         """
-        pass
+        with self.lock:
+            self.x_data = x_data
+            self.y_data = y_data
 
-    def GetPlotData(self) -> typing.Any:
+    def GetPlotData(self) -> tuple[list, list]:
         """
         Get the plot data
         """
-        pass
+        with self.lock:
+            return self.x_data, self.y_data
 
 class TimePlotModel(PlotModel):
 

@@ -665,7 +665,10 @@ class Plot(Control):
     Plot Control, creates a plot control
     """
 
-    def __init__(self, label: str = None, width: int = 0, height: int = 0, pos: 'list[int]' = [],
+    def __init__(self, x_label: str, y_label: str, add_legend: bool = False, x_time: bool = False, y_time: bool = False, 
+                 x_lock_min: bool = False, x_lock_max: bool = False, y_lock_min: bool = False, y_lock_max: bool = False,
+                 x_no_gridlines: bool = False, y_no_gridlines: bool = False,
+                 label: str = None, width: int = 0, height: int = 0, pos: 'list[int]' = [],
                  parent: Control = None, callback: typing.Any = None, 
                  drag_callback: typing.Any = None, drop_callback: typing.Any = None, 
                  user_data: typing.Any = None, payload_type: str = '$$DPG_PAYLOAD', no_title: bool = False,
@@ -723,34 +726,60 @@ class Plot(Control):
             vertical_mod=vertical_mod
         )
 
-    def AddPlot(self, x_label: str, y_label: str, add_legend: bool = False, x_time: bool = False, y_time: bool = False, 
-                x_lock_min: bool = False, x_lock_max: bool = False, y_lock_min: bool = False, y_lock_max: bool = False,
-                x_no_gridlines: bool = False, y_no_gridlines: bool = False) -> Plot:
-        """
-        Creates the proper resources/references for plotting callbacks
-        """
-
         if add_legend:
             self.legend = dpg.add_plot_legend(parent=self.tag)
 
         self.x_axis = dpg.add_plot_axis(dpg.mvXAxis, label=x_label, time=x_time, parent=self.tag, lock_max=x_lock_max, lock_min=x_lock_min, no_gridlines=x_no_gridlines)
         self.y_axis = dpg.add_plot_axis(dpg.mvYAxis, label=y_label, time=y_time, parent=self.tag, lock_max=y_lock_max, lock_min=y_lock_min, no_gridlines=y_no_gridlines)
 
-        return self
-    
-    def FitAxis(self, axis: int) -> Plot:
+        self.line_series   = dpg.add_line_series(x=[], y=[], parent=self.x_axis)
+        self.candle_series = dpg.add_candle_series(dates=[], opens=[], closes=[], lows=[], highs=[], parent=self.y_axis)
+
+    def PlotLineSeriesData(self, x_data: list, y_data: list) -> Plot:
         """
-        Auto fits the axis to the plot
+        Configure the line series plot
         """
-        dpg.fit_axis_data(axis)
+        dpg.configure_item(self.line_series, x=x_data, y=y_data)
 
         return self
     
-    def SetAxisLimits(self, axis: int, min: float, max: float) -> Plot:
+    def PlotCandleSeriesData(self, dates: list, opens: list, closes: list, lows: list, highs: list) -> Plot:
         """
-        Sets axis limits.
+        Configure the candle series plot
         """
-        dpg.set_axis_limits(axis=axis, ymin=min, ymax=max)
+        dpg.configure_item(self.candle_series, dates=dates, opens=opens, closes=closes, lows=lows, highs=highs)
+
+        return self
+    
+    def FitXAxis(self) -> Plot:
+        """
+        Auto fits the x axis to the plot
+        """
+        dpg.fit_axis_data(self.x_axis)
+
+        return self
+    
+    def FitYAxis(self) -> Plot:
+        """
+        Auto fits the y axis to the plot
+        """
+        dpg.fit_axis_data(self.y_axis)
+
+        return self
+    
+    def SetXAxisLimits(self, min: float, max: float) -> Plot:
+        """
+        Set x axis limits
+        """
+        dpg.set_axis_limits(axis=self.x_axis, xmin=min, xmax=max)
+
+        return self
+    
+    def SetYAxisLimits(self, min: float, max: float) -> Plot:
+        """
+        Set x axis limits
+        """
+        dpg.set_axis_limits(axis=self.y_axis, xmin=min, xmax=max)
 
         return self
 
