@@ -24,15 +24,6 @@ class PlotView():
         """
         self.plot.PlotLineSeriesData(x_data=x_data, y_data=y_data)
 
-    def GetPlotData(self) -> tuple[list, list]:
-        """
-        Get the plot data
-        """
-        self.plot.GetValue()
-
-        # TODO: Not sure what gets returned here yet...
-        return
-
 class TimePlotView(PlotView):
 
     """
