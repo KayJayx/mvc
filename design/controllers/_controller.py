@@ -10,6 +10,7 @@ import design.controllers.checkbox_controller as cbc
 import design.models.checkbox_model as cm
 import design.controllers.plot_controller as pc
 import design.models.plot_model as pm
+import numpy as np
 
 class Controller():
 
@@ -29,7 +30,6 @@ class Controller():
 
         # Create models here
         self.gen_button_model        = bm.GenerateWaveformButtonModel()
-        self.stop_button_model       = bm.StopWaveformButtonModel()
         self.clear_button_model      = bm.ClearWaveformButtonModel()
         self.resolution_slider_model = sm.ResolutionSliderModel()
         self.amplitude_slider_model  = sm.AmplitudeSliderModel()
@@ -44,7 +44,6 @@ class Controller():
 
         # Create controllers here
         self.gen_button_controller        = bc.GenerateWaveformButtonController(self.gen_button_model, self.view)
-        self.stop_button_controller       = bc.StopWaveformButtonController(self.stop_button_model, self.view)
         self.clear_button_controller      = bc.ClearWaveformButtonController(self.clear_button_model, self.view)
         self.resolution_slider_controller = sc.ResolutionSliderController(self.resolution_slider_model, self.view)
         self.amplitude_slider_controller  = sc.AmplitudeSliderController(self.amplitude_slider_model, self.view)
@@ -58,10 +57,29 @@ class Controller():
         self.frequency_plot_controller    = pc.FrequencyPlotController(self.frequency_plot_model, self.view)
 
         # Run the designer to actually display the info to the screen
-        self.view.designer.Run()
+        self.view.designer.Run(self.UpdateWaveform)
 
     def UpdateWaveform(self) -> None:
         """
         The purpose of this function is to update the waveform plot onto the main window
         """
-        pass
+
+        if self.gen_button_model.WasClicked():
+            
+            # Get all of the needed information needed to update the plot
+            samples   = self.resolution_slider_controller.slider_model.GetValue()
+            x_data    = np.linspace(0, self.view.designer.length_of_plot, samples, endpoint=True)
+            amplitude = self.amplitude_slider_controller.slider_model.GetValue()
+            height    = self.height_slider_controller.slider_model.GetValue()
+            phase     = self.phase_slider_controller.slider_model.GetValue()
+            frequency = self.frequency_slider_controller.slider_model.GetValue()
+
+            if self.norm_checkbox_model.IsChecked():
+                y_data = [(amplitude * np.sin(((2 * np.pi * frequency * x) / samples) + phase)) + height for x in x_data]
+            else:
+                # Digital representation of what would be an analog signal, where samples represents the
+                # total number of inputs into my function
+                y_data = [(amplitude * np.sin(((2 * np.pi * frequency * x)) + phase)) + height for x in x_data]
+
+            # Plot the data
+            self.time_plot_controller.UpdatePlot(x_data=x_data, y_data=y_data)

@@ -12,9 +12,9 @@ class PlotController():
         self.plot_model = plot_model
         self.view       = view
 
-    def OnChange(self) -> None:
+    def UpdatePlot(self, x_data: list, y_data: list) -> None:
         """
-        For when the changes the plot
+        Called when updating the plot
         """
         pass
 
@@ -27,6 +27,14 @@ class TimePlotController(PlotController):
     def __init__(self, plot_model: pm.TimePlotModel, view: _view.View) -> None:
         super().__init__(plot_model, view)
 
+    def UpdatePlot(self, x_data: list, y_data: list) -> None:
+        """
+        For when the time plot needs to be updated
+        """
+        # We are going to update the model and the view here
+        self.plot_model.SetPlotData(x_data=x_data, y_data=y_data)
+        self.view.time_plot_view.SetPlotData(x_data=x_data, y_data=y_data)
+
 class FrequencyPlotController(PlotController):
 
     """
@@ -35,3 +43,11 @@ class FrequencyPlotController(PlotController):
 
     def __init__(self, plot_model: pm.FrequencyPlotModel, view: _view.View) -> None:
         super().__init__(plot_model, view)
+
+    def UpdatePlot(self, x_data: list, y_data: list) -> None:
+        """
+        For when the frequency plot needs to be updated
+        """
+        # We are going to update the model and the view here
+        self.plot_model.SetPlotData(x_data=x_data, y_data=y_data)
+        self.view.frequency_plot_view.SetPlotData(x_data=x_data, y_data=y_data)
