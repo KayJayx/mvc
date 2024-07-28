@@ -1,6 +1,7 @@
 from __future__ import annotations
 import design.models.label_model as lm
 import design.views._view as _view
+import numpy as np
 
 class LabelController():
 
@@ -12,9 +13,9 @@ class LabelController():
         self.label_model = label_model
         self.view        = view
 
-    def OnChange(self) -> None:
+    def UpdateLabel(self, label: str) -> None:
         """
-        For when the changes the label
+        For changes to the label
         """
         pass
 
@@ -27,6 +28,14 @@ class AngularLabelController(LabelController):
     def __init__(self, label_model: lm.AngularLabelModel, view: _view.View) -> None:
         super().__init__(label_model, view)
 
+    def UpdateLabel(self, label: str) -> None:
+        """
+        For changes to the angular frequency label
+        """
+        # We are going to update the model and the view here
+        self.label_model.SetLabel(label)
+        self.view.angular_label_view.SetLabel(label)
+
 class PeriodLabelController(LabelController):
 
     """
@@ -35,3 +44,11 @@ class PeriodLabelController(LabelController):
 
     def __init__(self, label_model: lm.PeriodLabelModel, view: _view.View) -> None:
         super().__init__(label_model, view)
+
+    def UpdateLabel(self, label: str) -> None:
+        """
+        For changes to the period label
+        """
+        # We are going to update the model and the view here
+        self.label_model.SetLabel(label)
+        self.view.period_label_view.SetLabel(label)
