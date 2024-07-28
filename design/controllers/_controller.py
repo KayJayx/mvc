@@ -64,6 +64,12 @@ class Controller():
         The purpose of this function is to update the waveform plot onto the main window
         """
 
+        if self.clear_button_controller.button_model.WasClicked():
+
+            self.time_plot_controller.UpdatePlot(x_data=[0], y_data=[0])
+            self.clear_button_controller.button_model.ClearClickEvent()
+            self.gen_button_controller.button_model.ClearClickEvent()
+
         if self.gen_button_controller.button_model.WasClicked():
             
             # Get all of the needed information needed to update the plot
@@ -83,3 +89,7 @@ class Controller():
 
             # Plot the data
             self.time_plot_controller.UpdatePlot(x_data=x_data, y_data=y_data)
+
+            # Update the labels with new data
+            self.angular_label_controller.UpdateLabel(f"Angular Freq: {'{:.3f}'.format(2 * np.pi * self.frequency_slider_controller.slider_model.GetValue())}")
+            self.period_label_controller.UpdateLabel(f"Period: {'{:.3f}'.format(1 / self.frequency_slider_controller.slider_model.GetValue())}")
