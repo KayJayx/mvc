@@ -1,4 +1,3 @@
-import typing
 import threading
 
 class LabelModel():
@@ -8,22 +7,15 @@ class LabelModel():
     """
 
     def __init__(self) -> None:
-        self.value = None
+        self.label = None
         self.lock  = threading.Lock()
 
-    def SetValue(self, value: typing.Any) -> None:
+    def SetLabel(self, label: str) -> None:
         """
         Set the value of the label
         """
         with self.lock:
-            self.value = value
-
-    def GetValue(self) -> typing.Any:
-        """
-        Get the value of the label
-        """
-        with self.lock:
-            return self.value
+            self.label = label
     
 class AngularLabelModel(LabelModel):
 

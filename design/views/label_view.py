@@ -23,12 +23,6 @@ class LabelView():
         Set the label
         """
         self.label.SetValue(label)
-
-    def GetLabel(self) -> str:
-        """
-        Get the label
-        """
-        return self.label.GetValue()
     
 class AngularLabelView(LabelView):
 
