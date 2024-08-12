@@ -30,9 +30,7 @@ class Designer():
         # Add your controls here
         #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         # State variables
-        self.generate_waveform = threading.Event()
-        self.clear_plots       = threading.Event()
-        self.length_of_plot    = 1
+        self.length_of_plot = 1
 
         # Create the main window
         self.main_window = cc.Window()
