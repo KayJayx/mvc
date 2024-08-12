@@ -1,7 +1,6 @@
 import controls as cc
 import tkinter as tk
 import numpy as np
-import threading
 import typing
 import os
 
